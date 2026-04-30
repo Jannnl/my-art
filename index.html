@@ -33,16 +33,12 @@
             transition: opacity 1s ease 0.5s;
         }
 
-        #bgm-toggle:hover {
-            color: #fff;
-        }
+        #bgm-toggle:hover { color: #fff; }
 
         #entrance {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             background-color: var(--bg-color);
             display: flex;
             flex-direction: column;
@@ -109,15 +105,13 @@
             transition: color 0.3s ease;
         }
 
-        footer a:hover {
-            color: #fff;
-        }
+        footer a:hover { color: #fff; }
 
         body {
             background-color: var(--bg-color);
             color: var(--primary-text);
             font-family: var(--font-main);
-            overflow: hidden; /* 初始锁定，进入后由JS开启 */
+            overflow: hidden; /* 初始锁定 */
             width: 100vw;
             height: 100vh;
             -webkit-font-smoothing: antialiased;
@@ -180,32 +174,23 @@
             z-index: 10;
         }
 
+        /* 动画保持不变 */
         @keyframes drift1 { 0% {transform: translate(0,0);} 50% {transform: translate(-2%,2%);} 100% {transform: translate(0,0);} }
         @keyframes drift2 { 0% {transform: translate(0,0);} 50% {transform: translate(2%,-2%);} 100% {transform: translate(0,0);} }
         .anim-drift.type-1 { animation: drift1 14s ease-in-out infinite; }
         .anim-drift.type-2 { animation: drift2 18s ease-in-out infinite; }
-
         @keyframes breathe { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
         .anim-breathe.type-1 { animation: breathe 10s ease-in-out infinite; }
         .anim-breathe.type-2 { animation: breathe 12s ease-in-out infinite; }
-
         @keyframes glow { 0% {opacity: 0.85;} 50% {opacity: 1;} 100% {opacity: 0.85;} }
         .anim-glow { animation: glow 9s ease-in-out infinite; }
 
         #emotional-room:not(.is-locked):hover .art-locator:not(:hover) { opacity: 0.35; }
         #emotional-room:not(.is-locked) .art-locator:hover { opacity: 1; z-index: 10 !important; }
-        #emotional-room:not(.is-locked) .art-locator:hover .anim-drift,
-        #emotional-room:not(.is-locked) .art-locator:hover .anim-breathe,
-        #emotional-room:not(.is-locked) .art-locator:hover .anim-glow { animation-play-state: paused !important; }
-        #emotional-room:not(.is-locked) .art-locator:hover .anim-breathe { transform: scale(1.03); transition: transform 0.4s ease; }
         #emotional-room:not(.is-locked) .art-locator:hover img { filter: grayscale(0%); }
 
         .art-locator.is-faded { opacity: 0 !important; pointer-events: none; }
         .art-locator.is-selected { opacity: 1 !important; z-index: 100 !important; }
-        .art-locator.is-selected .anim-drift,
-        .art-locator.is-selected .anim-breathe,
-        .art-locator.is-selected .anim-glow { animation: none !important; transform: none !important; }
-        .art-locator.is-selected img { filter: grayscale(0%); }
         .art-locator.is-selected .series-title.show { opacity: 1; }
 
         #series-gallery {
@@ -215,7 +200,7 @@
             overflow-y: auto; overflow-x: hidden;
             z-index: 200;
             opacity: 0; visibility: hidden;
-            transition: opacity 1.5s ease, visibility 1.5s;
+            transition: opacity 1s ease, visibility 1s;
             padding: 20vh 10vw;
             -webkit-overflow-scrolling: touch;
         }
@@ -244,7 +229,6 @@
         }
         .gallery-item.reveal { opacity: 1; transform: translateY(0); }
         .gallery-item img { width: 100%; display: block; transition: transform 0.4s ease; }
-        .gallery-item:hover img { transform: scale(1.02); }
 
         #lightbox {
             position: fixed;
@@ -258,86 +242,33 @@
         }
 
         #lightbox.active { opacity: 1; visibility: visible; }
-
-        .lb-content {
-            max-width: 85vw; max-height: 85vh; text-align: center;
-        }
+        .lb-content { max-width: 85vw; max-height: 85vh; text-align: center; }
         .lb-img { max-width: 100%; max-height: 75vh; object-fit: contain; }
-
-        .lb-info {
-            margin-top: 30px; opacity: 0;
-            transition: opacity 1s ease 0.6s;
-        }
-        .lb-info.revealed { opacity: 1; }
-
-        .lb-title { font-size: 1rem; font-style: italic; margin-bottom: 6px; color: var(--primary-text); }
-        .lb-meta { font-size: 0.8rem; color: var(--secondary-text); letter-spacing: 0.1em; }
 
         /* 移动端适配 */
         @media (max-width: 768px) {
-            body {
-                overflow-y: auto;
-                height: auto;
-                padding-bottom: 10vh;
-            }
-
+            body { overflow-y: auto; height: auto; }
             #emotional-room {
                 height: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding-top: 15vh;
-                padding-bottom: 10vh;
+                display: flex; flex-direction: column; align-items: center;
+                padding-top: 15vh; padding-bottom: 10vh;
             }
-
-            .main-title {
-                position: relative;
-                top: 0;
-                left: 0;
-                transform: none;
-                text-align: center;
-                margin-bottom: 5vh;
-            }
-
+            .main-title { position: relative; top: 0; transform: none; margin-bottom: 5vh; }
             .art-locator {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                transform: none !important;
-                width: 70vw !important;
-                margin: 30px auto !important;
-                display: block;
+                position: relative !important; top: auto !important; left: auto !important;
+                transform: none !important; width: 75vw !important; margin: 40px auto !important;
             }
-
             .art-locator.is-selected {
-                position: fixed !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                width: 85vw !important;
-                margin: 0 !important;
-                z-index: 100 !important;
+                position: fixed !important; top: 50% !important; left: 50% !important;
+                transform: translate(-50%, -50%) !important; width: 85vw !important; z-index: 100 !important;
             }
-
             .series-title {
-                position: absolute !important;
-                top: auto !important;
-                bottom: -28px !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
+                position: absolute !important; top: auto !important; bottom: -35px !important;
+                left: 50% !important; transform: translateX(-50%) !important;
                 font-size: 0.8rem !important;
-                white-space: nowrap !important;
-                text-shadow: none !important;
             }
-
-            #bgm-toggle {
-                bottom: 80px;
-                right: 20px;
-            }
-
-            footer {
-                bottom: 20px;
-            }
+            #bgm-toggle { bottom: 80px; right: 20px; }
+            footer { bottom: 20px; }
         }
     </style>
 </head>
@@ -345,9 +276,7 @@
 
     <div id="entrance">
         <div class="logo">YEONG</div>
-        <div class="tagline">
-            Nothing too loud here<br>
-        </div>
+        <div class="tagline">Nothing too loud here</div>
         <div class="prompt">click to enter</div>
     </div>
 
@@ -355,52 +284,40 @@
 
     <div id="emotional-room">
         <div class="art-locator" id="item-ecstasy" data-series="ecstasy">
-            <div class="anim-drift type-1">
-                <div class="anim-breathe type-1">
-                    <img class="anim-glow" src="Nothing but the Night.jpg" alt="Ecstasy">
-                    <div class="series-title">ecstasy that ends in nothing</div>
-                </div>
-            </div>
+            <div class="anim-drift type-1"><div class="anim-breathe type-1">
+                <img class="anim-glow" src="Nothing but the Night.jpg" alt="Ecstasy">
+                <div class="series-title">ecstasy that ends in nothing</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-greydays" data-series="greydays">
-            <div class="anim-drift type-2">
-                <div class="anim-breathe type-2">
-                    <img class="anim-glow" src="My body holds a river.jpg" alt="Grey Days">
-                    <div class="series-title">grey days</div>
-                </div>
-            </div>
+            <div class="anim-drift type-2"><div class="anim-breathe type-2">
+                <img class="anim-glow" src="My body holds a river.jpg" alt="Grey Days">
+                <div class="series-title">grey days</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-untitled" data-series="untitled">
-            <div class="anim-drift type-2">
-                <div class="anim-breathe type-1">
-                    <img class="anim-glow" src="Clean us like the rain in spring.png" alt="Untitled">
-                    <div class="series-title">untitled</div>
-                </div>
-            </div>
+            <div class="anim-drift type-2"><div class="anim-breathe type-1">
+                <img class="anim-glow" src="Clean us like the rain in spring.png" alt="Untitled">
+                <div class="series-title">untitled</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-elsewhere" data-series="elsewhere">
-            <div class="anim-drift type-1">
-                <div class="anim-breathe type-2">
-                    <img class="anim-glow" src="I saw the cracks in your halo and stayed.jpg" alt="Elsewhere">
-                    <div class="series-title">elsewhere</div>
-                </div>
-            </div>
+            <div class="anim-drift type-1"><div class="anim-breathe type-2">
+                <img class="anim-glow" src="I saw the cracks in your halo and stayed.jpg" alt="Elsewhere">
+                <div class="series-title">elsewhere</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-growth" data-series="growth">
-            <div class="anim-drift type-1">
-                <div class="anim-breathe type-1">
-                    <img class="anim-glow" src="The flowers don't know I'm dying here.jpg" alt="Growth">
-                    <div class="series-title">do i still got time to grow</div>
-                </div>
-            </div>
+            <div class="anim-drift type-1"><div class="anim-breathe type-1">
+                <img class="anim-glow" src="The flowers don't know I'm dying here.jpg" alt="Growth">
+                <div class="series-title">do i still got time to grow</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-dream" data-series="dream">
-            <div class="anim-drift type-2">
-                <div class="anim-breathe type-2">
-                    <img class="anim-glow" src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" alt="Dream">
-                    <div class="series-title">dream only</div>
-                </div>
-            </div>
+            <div class="anim-drift type-2"><div class="anim-breathe type-2">
+                <img class="anim-glow" src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" alt="Dream">
+                <div class="series-title">dream only</div>
+            </div></div>
         </div>
     </div>
 
@@ -410,24 +327,12 @@
     </div>
 
     <div id="lightbox">
-        <div class="lb-content">
-            <img src="" class="lb-img" id="lb-img">
-            <div class="lb-info" id="lb-info">
-                <div class="lb-title" id="lb-title"></div>
-                <div class="lb-meta" id="lb-meta"></div>
-            </div>
-        </div>
+        <div class="lb-content"><img src="" class="lb-img" id="lb-img"></div>
     </div>
 
-    <footer>
-        <a href="https://www.instagram.com/xzua.no?igsh=dTl2YzI2ZXNnbWpk" target="_blank" rel="noopener noreferrer">instagram</a>
-    </footer>
-
+    <footer><a href="https://www.instagram.com/xzua.no?igsh=dTl2YzI2ZXNnbWpk" target="_blank">instagram</a></footer>
     <div id="bgm-toggle">music · off</div>
-
-    <audio id="bgm" loop preload="auto">
-        <source src="致青春.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bgm" loop preload="auto"><source src="致青春.mp3" type="audio/mpeg"></audio>
 
     <script>
         const entrance = document.getElementById('entrance');
@@ -437,30 +342,20 @@
         const bgmToggle = document.getElementById('bgm-toggle');
         const bgm = document.getElementById('bgm');
         let isBgmPlaying = false;
+        let savedScrollPosition = 0; // 【关键：记录位置的变量】
 
         bgm.volume = 0.3;
 
-        // ===== 修复：进入网站瞬间重置滚动权限 =====
         entrance.addEventListener('click', () => {
             entrance.classList.add('hidden');
-            
-            // 关键修复：开启滚动条并归零
             document.body.style.overflow = 'auto';
-            document.documentElement.style.overflow = 'auto';
-            window.scrollTo(0, 0);
-
             setTimeout(() => {
                 room.style.opacity = '1';
                 mainTitle.style.opacity = '1';
                 footer.style.opacity = '1';
                 bgmToggle.style.opacity = '1';
             }, 200);
-
-            // 播放音乐逻辑
-            bgm.play().then(() => {
-                isBgmPlaying = true;
-                bgmToggle.innerText = 'music · on';
-            }).catch(e => console.log('BGM wait interaction'));
+            bgm.play().then(() => { isBgmPlaying = true; bgmToggle.innerText = 'music · on'; });
         });
 
         const seriesData = {
@@ -514,14 +409,14 @@
         const galleryContent = document.getElementById('gallery-content');
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lb-img');
-        const lbInfo = document.getElementById('lb-info');
-        const lbTitle = document.getElementById('lb-title');
-        const lbMeta = document.getElementById('lb-meta');
-        let lightboxTimeout;
 
         artItems.forEach(item => {
             item.addEventListener('click', function() {
                 if (room.classList.contains('is-locked')) return;
+
+                // 【记录进入前的位置】
+                savedScrollPosition = window.scrollY;
+
                 room.classList.add('is-locked');
                 mainTitle.style.opacity = '0';
                 footer.style.opacity = '0';
@@ -549,40 +444,29 @@
                 wrapper.classList.add('gallery-item');
                 const img = document.createElement('img');
                 img.src = art.src;
-                wrapper.addEventListener('click', () => openLightbox(art));
+                wrapper.addEventListener('click', () => openLightbox(art.src));
                 wrapper.appendChild(img);
                 galleryContent.appendChild(wrapper);
             });
 
             gallery.classList.add('active');
-            // 打开画廊时允许滚动
-            document.body.style.overflow = 'auto';
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('reveal'); });
-            }, { threshold: 0.1 });
-            setTimeout(() => {
-                galleryContent.querySelectorAll('.gallery-item').forEach(el => observer.observe(el));
-            }, 100);
+            document.body.style.overflow = 'hidden'; // 防止详情页滑动时底层也动
         }
 
-        // ===== 修复：关闭画廊瞬间重置滚动条位置 =====
+        // ===== 【修复：退出时恢复位置】 =====
         function closeGallery() {
             gallery.classList.remove('active');
             
-            // 核心修复：退出时立即回到顶部，手机端保持auto滚动权限
-            window.scrollTo(0, 0); 
-            if (window.innerWidth > 768) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = 'auto';
-            }
-
+            // 稍等片刻待详情页淡出，然后恢复位置
             setTimeout(() => {
+                window.scrollTo(0, savedScrollPosition);
+                document.body.style.overflow = 'auto'; // 恢复滚动权限
+
                 room.classList.remove('is-locked');
                 mainTitle.style.opacity = '1';
                 footer.style.opacity = '1';
                 bgmToggle.style.opacity = '1';
+                
                 artItems.forEach(item => {
                     item.classList.remove('is-faded', 'is-selected');
                     if (window.innerWidth > 768) {
@@ -591,24 +475,11 @@
                     const title = item.querySelector('.series-title');
                     if (title) title.classList.remove('show');
                 });
-            }, 1000);
+            }, 500);
         }
 
-        function openLightbox(art) {
-            lbImg.src = art.src;
-            lbTitle.innerText = art.title;
-            lbMeta.innerText = `${art.year} — ${art.medium}`;
-            lightbox.classList.add('active');
-            clearTimeout(lightboxTimeout);
-            lightboxTimeout = setTimeout(() => { lbInfo.classList.add('revealed'); }, 600);
-        }
-
-        function closeLightbox() {
-            lightbox.classList.remove('active');
-            lbInfo.classList.remove('revealed');
-            clearTimeout(lightboxTimeout);
-            setTimeout(() => { lbImg.src = ''; }, 400);
-        }
+        function openLightbox(src) { lbImg.src = src; lightbox.classList.add('active'); }
+        function closeLightbox() { lightbox.classList.remove('active'); setTimeout(() => { lbImg.src = ''; }, 400); }
 
         bgmToggle.addEventListener('click', (e) => {
             e.stopPropagation();
