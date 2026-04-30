@@ -117,7 +117,7 @@
             background-color: var(--bg-color);
             color: var(--primary-text);
             font-family: var(--font-main);
-            overflow: hidden;
+            overflow: hidden; /* 初始锁定，进入后由JS开启 */
             width: 100vw;
             height: 100vh;
             -webkit-font-smoothing: antialiased;
@@ -217,6 +217,7 @@
             opacity: 0; visibility: hidden;
             transition: opacity 1.5s ease, visibility 1.5s;
             padding: 20vh 10vw;
+            -webkit-overflow-scrolling: touch;
         }
 
         #series-gallery.active { opacity: 1; visibility: visible; }
@@ -298,7 +299,6 @@
                 margin-bottom: 5vh;
             }
 
-            /* 默认所有图片卡片：相对定位、居中排列 */
             .art-locator {
                 position: relative !important;
                 top: auto !important;
@@ -309,7 +309,6 @@
                 display: block;
             }
 
-            /* 选中状态：fixed定位居中，覆盖上面的relative */
             .art-locator.is-selected {
                 position: fixed !important;
                 top: 50% !important;
@@ -320,7 +319,6 @@
                 z-index: 100 !important;
             }
 
-            /* 修复文字标题与图片重叠：移到图片正下方 */
             .series-title {
                 position: absolute !important;
                 top: auto !important;
@@ -332,22 +330,6 @@
                 text-shadow: none !important;
             }
 
-            /* 入口页在手机端也缩小 */
-            #entrance .logo {
-                font-size: 1.2rem;
-                letter-spacing: 0.3em;
-            }
-
-            #entrance .tagline {
-                font-size: 0.8rem;
-            }
-
-            .gallery-close {
-                top: 20px;
-                right: 20px;
-            }
-
-            /* 移动端BGM开关位置调整，避免和footer重叠 */
             #bgm-toggle {
                 bottom: 80px;
                 right: 20px;
@@ -441,16 +423,13 @@
         <a href="https://www.instagram.com/xzua.no?igsh=dTl2YzI2ZXNnbWpk" target="_blank" rel="noopener noreferrer">instagram</a>
     </footer>
 
-    <!-- BGM 音乐开关 -->
     <div id="bgm-toggle">music · off</div>
 
-    <!-- 背景音乐文件 -->
     <audio id="bgm" loop preload="auto">
         <source src="致青春.mp3" type="audio/mpeg">
-    
+    </audio>
 
     <script>
-        // ===== 核心元素获取 =====
         const entrance = document.getElementById('entrance');
         const room = document.getElementById('emotional-room');
         const mainTitle = document.getElementById('main-title');
@@ -459,55 +438,32 @@
         const bgm = document.getElementById('bgm');
         let isBgmPlaying = false;
 
-        // ===== BGM 背景音乐控制 =====
-        // 音乐默认音量（0-1，0.3是柔和不抢戏的氛围音量）
         bgm.volume = 0.3;
 
-        // 点击入口页进入时，自动播放音乐
-        entrance.addEventListener('click', function initBgm() {
-            bgm.play().then(() => {
-                isBgmPlaying = true;
-                bgmToggle.innerText = 'music · on';
-            }).catch(e => {
-                console.log('BGM自动播放被浏览器限制，点击页面任意处可播放', e);
-            });
-        }, { once: true });
-
-        // 页面任意处点击兜底播放（解决浏览器自动播放限制）
-        document.addEventListener('click', function fallbackBgm() {
-            if (!isBgmPlaying) {
-                bgm.play().then(() => {
-                    isBgmPlaying = true;
-                    bgmToggle.innerText = 'music · on';
-                }).catch(e => console.log('BGM播放失败：', e));
-            }
-        }, { once: true });
-
-        // 音乐开关点击控制
-        bgmToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // 避免触发页面其他点击事件
-            if (isBgmPlaying) {
-                bgm.pause();
-                bgmToggle.innerText = 'music · off';
-            } else {
-                bgm.play();
-                bgmToggle.innerText = 'music · on';
-            }
-            isBgmPlaying = !isBgmPlaying;
-        });
-
-        // ===== 入口页进入逻辑 =====
+        // ===== 修复：进入网站瞬间重置滚动权限 =====
         entrance.addEventListener('click', () => {
             entrance.classList.add('hidden');
+            
+            // 关键修复：开启滚动条并归零
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+            window.scrollTo(0, 0);
+
             setTimeout(() => {
                 room.style.opacity = '1';
                 mainTitle.style.opacity = '1';
                 footer.style.opacity = '1';
                 bgmToggle.style.opacity = '1';
             }, 200);
+
+            // 播放音乐逻辑
+            bgm.play().then(() => {
+                isBgmPlaying = true;
+                bgmToggle.innerText = 'music · on';
+            }).catch(e => console.log('BGM wait interaction'));
         });
 
-                const seriesData = {
+        const seriesData = {
             'untitled': [
                 { src: "Clean us like the rain in spring.png", title: "Clean us like the rain in spring", year: '2025', medium: 'Oil on Canvas' },
                 { src: "Hiding in a disguise of an ever giving flower.png", title: "Hiding in a disguise of an ever giving flower", year: '2025', medium: 'Oil on Canvas' }
@@ -553,11 +509,9 @@
             ]
         };
 
-
         const artItems = document.querySelectorAll('.art-locator');
         const gallery = document.getElementById('series-gallery');
         const galleryContent = document.getElementById('gallery-content');
-
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lb-img');
         const lbInfo = document.getElementById('lb-info');
@@ -574,20 +528,15 @@
                 bgmToggle.style.opacity = '0';
 
                 artItems.forEach(other => { if (other !== item) other.classList.add('is-faded'); });
-
                 item.classList.add('is-selected');
 
-                // 桌面端才用JS控制位移，移动端已由CSS fixed处理
                 if (window.innerWidth > 768) {
-                    const scaleValue = 1.2;
                     item.style.top = '50vh';
                     item.style.left = '50vw';
-                    item.style.transform = `translate(-50%, -50%) scale(${scaleValue})`;
+                    item.style.transform = `translate(-50%, -50%) scale(1.2)`;
                 }
 
-                setTimeout(() => {
-                    item.querySelector('.series-title').classList.add('show');
-                }, 500);
+                setTimeout(() => { item.querySelector('.series-title').classList.add('show'); }, 500);
                 setTimeout(() => { openGallery(item.dataset.series); }, 1500);
             });
         });
@@ -595,44 +544,63 @@
         function openGallery(seriesKey) {
             galleryContent.innerHTML = '';
             const artworks = seriesData[seriesKey] || [];
-
             artworks.forEach(art => {
                 const wrapper = document.createElement('div');
                 wrapper.classList.add('gallery-item');
-
                 const img = document.createElement('img');
                 img.src = art.src;
-                img.alt = art.title;
-
                 wrapper.addEventListener('click', () => openLightbox(art));
-
                 wrapper.appendChild(img);
                 galleryContent.appendChild(wrapper);
             });
 
             gallery.classList.add('active');
+            // 打开画廊时允许滚动
             document.body.style.overflow = 'auto';
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('reveal'); });
             }, { threshold: 0.1 });
-
             setTimeout(() => {
                 galleryContent.querySelectorAll('.gallery-item').forEach(el => observer.observe(el));
             }, 100);
+        }
+
+        // ===== 修复：关闭画廊瞬间重置滚动条位置 =====
+        function closeGallery() {
+            gallery.classList.remove('active');
+            
+            // 核心修复：退出时立即回到顶部，手机端保持auto滚动权限
+            window.scrollTo(0, 0); 
+            if (window.innerWidth > 768) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+
+            setTimeout(() => {
+                room.classList.remove('is-locked');
+                mainTitle.style.opacity = '1';
+                footer.style.opacity = '1';
+                bgmToggle.style.opacity = '1';
+                artItems.forEach(item => {
+                    item.classList.remove('is-faded', 'is-selected');
+                    if (window.innerWidth > 768) {
+                        item.style.top = ''; item.style.left = ''; item.style.transform = '';
+                    }
+                    const title = item.querySelector('.series-title');
+                    if (title) title.classList.remove('show');
+                });
+            }, 1000);
         }
 
         function openLightbox(art) {
             lbImg.src = art.src;
             lbTitle.innerText = art.title;
             lbMeta.innerText = `${art.year} — ${art.medium}`;
-
             lightbox.classList.add('active');
-
             clearTimeout(lightboxTimeout);
-            lightboxTimeout = setTimeout(() => {
-                lbInfo.classList.add('revealed');
-            }, 600);
+            lightboxTimeout = setTimeout(() => { lbInfo.classList.add('revealed'); }, 600);
         }
 
         function closeLightbox() {
@@ -642,35 +610,14 @@
             setTimeout(() => { lbImg.src = ''; }, 400);
         }
 
-        function closeGallery() {
-            gallery.classList.remove('active');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                room.classList.remove('is-locked');
-                mainTitle.style.opacity = '1';
-                footer.style.opacity = '1';
-                bgmToggle.style.opacity = '1';
-                artItems.forEach(item => {
-                    item.classList.remove('is-faded', 'is-selected');
-                    // 桌面端才重置inline style
-                    if (window.innerWidth > 768) {
-                        item.style.top = '';
-                        item.style.left = '';
-                        item.style.transform = '';
-                    }
-                    const title = item.querySelector('.series-title');
-                    if (title) title.classList.remove('show');
-                });
-            }, 1000);
-        }
+        bgmToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isBgmPlaying) { bgm.pause(); bgmToggle.innerText = 'music · off'; }
+            else { bgm.play(); bgmToggle.innerText = 'music · on'; }
+            isBgmPlaying = !isBgmPlaying;
+        });
 
         lightbox.addEventListener('click', closeLightbox);
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape") {
-                if (lightbox.classList.contains('active')) closeLightbox();
-                else if (gallery.classList.contains('active')) closeGallery();
-            }
-        });
     </script>
 </body>
 </html>
