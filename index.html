@@ -12,132 +12,235 @@
             --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===== BGM 音乐开关样式 ===== */
+        #bgm-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            color: var(--secondary-text);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            opacity: 0;
+            transition: opacity 1s ease 0.5s;
+        }
+
+        #bgm-toggle:hover { color: #fff; }
+
+        #entrance {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease-out, visibility 0.6s;
+            cursor: pointer;
+        }
+
+        #entrance.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #entrance .logo {
+            font-size: 1.4rem;
+            font-weight: 400;
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.35em;
+            color: var(--primary-text);
+        }
+
+        #entrance .tagline {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            letter-spacing: 0.05em;
+        }
+
+        /* 你的 click to enter 还在最下面 */
+        #entrance .prompt {
+            position: absolute;
+            bottom: 10%;
+            font-size: 0.75rem;
+            color: var(--secondary-text);
+            opacity: 0.6;
+            letter-spacing: 0.1em;
+            animation: fadePulse 2s infinite;
+        }
+
+        @keyframes fadePulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        footer {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 1s ease 0.5s;
+        }
+
+        footer a {
+            color: var(--secondary-text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover { color: #fff; }
 
         body {
             background-color: var(--bg-color);
             color: var(--primary-text);
             font-family: var(--font-main);
+            overflow-x: hidden;
             width: 100vw;
             -webkit-font-smoothing: antialiased;
-            /* 手机端默认允许滚动，否则会滑不动 */
-            overflow-x: hidden;
-            overflow-y: auto;
         }
 
-        /* ===== UI 元素 ===== */
-        #bgm-toggle {
-            position: fixed; bottom: 30px; right: 30px;
-            z-index: 1000; color: var(--secondary-text);
-            font-size: 0.75rem; letter-spacing: 0.1em;
-            cursor: pointer; opacity: 0; transition: opacity 1s;
-        }
-
-        #entrance {
-            position: fixed; top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-color: var(--bg-color);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            z-index: 9999; transition: opacity 0.6s;
-            cursor: pointer;
-        }
-        #entrance.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-        footer {
-            position: fixed; bottom: 30px; left: 50%;
-            transform: translateX(-50%); z-index: 100;
-            opacity: 0; transition: opacity 1s;
-        }
-        footer a { color: var(--secondary-text); text-decoration: none; font-size: 0.85rem; }
-
-        /* ===== 主展厅 ===== */
         .main-title {
-            position: absolute; top: 8vh; left: 50%;
-            transform: translateX(-50%); font-size: 1rem;
-            letter-spacing: 0.35em; z-index: 10; opacity: 0;
-            transition: opacity 1s;
+            position: absolute;
+            top: 8vh; left: 50%;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            letter-spacing: 0.35em;
+            font-weight: 400;
+            color: var(--primary-text);
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 1s ease 0.3s;
         }
 
         #emotional-room {
-            position: relative; width: 100vw; height: 100vh;
-            opacity: 0; transition: opacity 1s;
+            position: relative;
+            width: 100vw; height: 100vh;
+            opacity: 0;
+            transition: opacity 1s ease 0.2s;
         }
 
         .art-locator {
-            position: absolute; transform: translate(-50%, -50%);
+            position: absolute;
+            transform: translate(-50%, -50%);
             transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            cursor: pointer; z-index: 5;
+            cursor: pointer;
+            opacity: 0.85;
         }
 
-        /* 桌面端布局坐标 */
-        #item-ecstasy   { top: 18vh; left: 50vw; width: 14vw; }
-        #item-greydays  { top: 38vh; left: 22vw; width: 11vw; }
-        #item-elsewhere { top: 38vh; left: 78vw; width: 14vw; }
-        #item-untitled  { top: 52vh; left: 50vw; width: 22vw; }
-        #item-growth    { top: 78vh; left: 28vw; width: 11vw; }
-        #item-dream     { top: 78vh; left: 72vw; width: 10vw; }
+        #item-ecstasy   { top: 18vh; left: 50vw; width: 14vw; z-index: 2; }
+        #item-greydays  { top: 38vh; left: 22vw; width: 11vw; z-index: 1; }
+        #item-elsewhere { top: 38vh; left: 78vw; width: 14vw; z-index: 2; }
+        #item-untitled  { top: 52vh; left: 50vw; width: 22vw; z-index: 3; }
+        #item-growth    { top: 78vh; left: 28vw; width: 11vw; z-index: 1; }
+        #item-dream     { top: 78vh; left: 72vw; width: 10vw; z-index: 1; }
 
-        .art-locator img { width: 100%; display: block; filter: grayscale(20%); transition: filter 0.4s; }
+        .art-locator img {
+            width: 100%; display: block;
+            filter: grayscale(20%);
+            transition: filter 0.4s ease;
+        }
+
         .series-title {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); font-size: 1.2rem;
-            color: #fff; opacity: 0; pointer-events: none;
-            transition: opacity 0.8s; white-space: nowrap; z-index: 10;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            letter-spacing: 0.15em;
+            color: #fff;
+            text-transform: lowercase;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            z-index: 10;
         }
 
-        /* 状态控制 */
         .art-locator.is-faded { opacity: 0 !important; pointer-events: none; }
         .art-locator.is-selected { opacity: 1 !important; z-index: 100 !important; }
         .art-locator.is-selected .series-title.show { opacity: 1; }
 
-        /* ===== 系列详情画廊 ===== */
         #series-gallery {
-            position: fixed; top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: #000; overflow-y: auto;
-            z-index: 2000; opacity: 0; visibility: hidden;
-            transition: opacity 0.8s, visibility 0.8s;
-            padding: 15vh 10vw;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000;
+            overflow-y: auto; overflow-x: hidden;
+            z-index: 200;
+            opacity: 0; visibility: hidden;
+            transition: opacity 1s ease, visibility 1s;
+            padding: 20vh 10vw;
             -webkit-overflow-scrolling: touch;
         }
+
         #series-gallery.active { opacity: 1; visibility: visible; }
 
         .gallery-close {
-            position: fixed; top: 40px; right: 40px;
-            color: var(--secondary-text); font-size: 0.8rem;
-            cursor: pointer; z-index: 2100;
+            position: fixed;
+            top: 40px; right: 50px;
+            color: var(--secondary-text);
+            font-size: 0.8rem; letter-spacing: 0.1em;
+            cursor: pointer; transition: color 0.3s;
+            z-index: 210;
         }
 
         .gallery-content {
             display: flex; flex-direction: column; align-items: center;
-            gap: 10vh; max-width: 800px; margin: 0 auto;
+            gap: 15vh; max-width: 900px; margin: 0 auto;
         }
-        .gallery-item { width: 100%; opacity: 0; transform: translateY(20px); transition: 1s; }
+
+        .gallery-item {
+            width: 100%;
+            opacity: 0; transform: translateY(30px);
+            transition: all 1s ease;
+        }
         .gallery-item.reveal { opacity: 1; transform: translateY(0); }
         .gallery-item img { width: 100%; display: block; }
 
-        /* 移动端适配 */
         @media (max-width: 768px) {
-            #emotional-room { height: auto; display: flex; flex-direction: column; padding-top: 15vh; }
+            body { overflow-y: auto; height: auto; }
+            #emotional-room {
+                height: auto;
+                display: flex; flex-direction: column; align-items: center;
+                padding-top: 15vh; padding-bottom: 10vh;
+            }
+            .main-title { position: relative; top: 0; transform: none; margin-bottom: 5vh; }
             .art-locator {
                 position: relative !important; top: auto !important; left: auto !important;
-                transform: none !important; width: 70vw !important; margin: 40px auto !important;
+                transform: none !important; width: 75vw !important; margin: 40px auto !important;
             }
             .art-locator.is-selected {
                 position: fixed !important; top: 50% !important; left: 50% !important;
-                transform: translate(-50%, -50%) !important; width: 85vw !important;
+                transform: translate(-50%, -50%) !important; width: 85vw !important; z-index: 100 !important;
             }
             .series-title {
-                position: absolute !important; top: auto !important; bottom: -30px !important;
-                left: 50% !important; transform: translateX(-50%) !important; font-size: 0.8rem !important;
+                position: absolute !important; top: auto !important; bottom: -35px !important;
+                left: 50% !important; transform: translateX(-50%) !important;
+                font-size: 0.8rem !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <div id="entrance" onclick="enterSite()">
+    <div id="entrance">
         <div class="logo">YEONG</div>
         <div class="tagline">Nothing too loud here</div>
         <div class="prompt">click to enter</div>
@@ -146,27 +249,27 @@
     <h1 class="main-title" id="main-title">YEONG</h1>
 
     <div id="emotional-room">
-        <div class="art-locator" data-series="ecstasy" id="item-ecstasy">
+        <div class="art-locator" id="item-ecstasy" data-series="ecstasy">
             <img src="Nothing but the Night.jpg">
             <div class="series-title">ecstasy that ends in nothing</div>
         </div>
-        <div class="art-locator" data-series="greydays" id="item-greydays">
+        <div class="art-locator" id="item-greydays" data-series="greydays">
             <img src="My body holds a river.jpg">
             <div class="series-title">grey days</div>
         </div>
-        <div class="art-locator" data-series="untitled" id="item-untitled">
+        <div class="art-locator" id="item-untitled" data-series="untitled">
             <img src="Clean us like the rain in spring.png">
             <div class="series-title">untitled</div>
         </div>
-        <div class="art-locator" data-series="elsewhere" id="item-elsewhere">
+        <div class="art-locator" id="item-elsewhere" data-series="elsewhere">
             <img src="I saw the cracks in your halo and stayed.jpg">
             <div class="series-title">elsewhere</div>
         </div>
-        <div class="art-locator" data-series="growth" id="item-growth">
+        <div class="art-locator" id="item-growth" data-series="growth">
             <img src="The flowers don't know I'm dying here.jpg">
             <div class="series-title">do i still got time to grow</div>
         </div>
-        <div class="art-locator" data-series="dream" id="item-dream">
+        <div class="art-locator" id="item-dream" data-series="dream">
             <img src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png">
             <div class="series-title">dream only</div>
         </div>
@@ -182,6 +285,7 @@
     <audio id="bgm" loop preload="auto"><source src="致青春.mp3" type="audio/mpeg"></audio>
 
     <script>
+        const entrance = document.getElementById('entrance');
         const room = document.getElementById('emotional-room');
         const mainTitle = document.getElementById('main-title');
         const footer = document.querySelector('footer');
@@ -192,85 +296,76 @@
         const artItems = document.querySelectorAll('.art-locator');
 
         let isBgmPlaying = false;
-        let savedY = 0; // 记忆滚动位置
+        let savedScrollPosition = 0; // 记忆位置
 
-        // 进入网站
-        function enterSite() {
-            document.getElementById('entrance').classList.add('hidden');
+        entrance.addEventListener('click', () => {
+            entrance.classList.add('hidden');
             room.style.opacity = '1';
             mainTitle.style.opacity = '1';
             footer.style.opacity = '1';
             bgmToggle.style.opacity = '1';
             bgm.play().then(() => { isBgmPlaying = true; bgmToggle.innerText = 'music · on'; });
-        }
+        });
 
-        // 作品数据
+        // 恢复你所有的图片数据
         const seriesData = {
-            'untitled': [{src:"Clean us like the rain in spring.png"}, {src:"Hiding in a disguise of an ever giving flower.png"}],
-            'ecstasy': [{src:"Nothing but the Night.jpg"}, {src:"The Running and Nothing.jpg"}, {src:"No feelings Just lies Everywhere.jpg"}, {src:"They take my body Steal my thoughts. Call it justice Call me guilty.jpeg"}, {src:"Mystery Remains.jpg"}, {src:"Give me everything.jpg"}],
-            'greydays': [{src:"That's where I wanna be.jpg"}, {src:"s There Someone Else.jpg"}, {src:"Beyond the Bars the Water Sings.jpg"}, {src:"My body holds a river.jpg"}, {src:"For You a Thousand Times Over.jpg"}],
-            'elsewhere': [{src:"Breathe Air without weight.png"}, {src:"I saw the cracks in your halo and stayed.jpg"}, {src:"我怀疑人们的生活 有所掩饰.png"}, {src:"They don't want me They want my performance.jpg"}, {src:"Soft Under Dim Light.png"}, {src:"Almost there Almost gone.jpg"}],
-            'growth': [{src:"Growth Archive.jpg"}, {src:"00 00.jpg"}, {src:"Stuck in the ticking.jpg"}, {src:"This can't be right.jpg"}, {src:"No One  Not One Gone.jpg"}, {src:"It gets better' but when.jpg"}, {src:"Growth Archive 2.jpg"}, {src:"hold up hold up.jpg"}, {src:"The flowers don't know I'm dying here.jpg"}, {src:"No Child Left Behind.jpg"}, {src:"No one knows.jpg"}],
-            'dream': [{src:"mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png"}]
+            'untitled': [{ src: "Clean us like the rain in spring.png" }, { src: "Hiding in a disguise of an ever giving flower.png" }],
+            'ecstasy': [{ src: "Nothing but the Night.jpg" }, { src: "The Running and Nothing.jpg" }, { src: "No feelings Just lies Everywhere.jpg" }, { src: "They take my body Steal my thoughts. Call it justice Call me guilty.jpeg" }, { src: "Mystery Remains.jpg" }, { src: "Give me everything.jpg" }],
+            'greydays': [{ src: "That's where I wanna be.jpg" }, { src: "s There Someone Else.jpg" }, { src: "Beyond the Bars the Water Sings.jpg" }, { src: "My body holds a river.jpg" }, { src: "For You a Thousand Times Over.jpg" }],
+            'elsewhere': [{ src: "Breathe Air without weight.png" }, { src: "I saw the cracks in your halo and stayed.jpg" }, { src: "我怀疑人们的生活 有所掩饰.png" }, { src: "They don't want me They want my performance.jpg" }, { src: "Soft Under Dim Light.png" }, { src: "Almost there Almost gone.jpg" }],
+            'growth': [{ src: "Growth Archive.jpg" }, { src: "00 00.jpg" }, { src: "Stuck in the ticking.jpg" }, { src: "This can't be right.jpg" }, { src: "No One  Not One Gone.jpg" }, { src: "It gets better' but when.jpg" }, { src: "Growth Archive 2.jpg" }, { src: "hold up hold up.jpg" }, { src: "The flowers don't know I'm dying here.jpg" }, { src: "No Child Left Behind.jpg" }, { src: "No one knows.jpg" }],
+            'dream': [{ src: "mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" }]
         };
 
-        // 点击进入系列
         artItems.forEach(item => {
-            item.addEventListener('click', () => {
-                if(room.classList.contains('locked')) return;
+            item.addEventListener('click', function() {
+                if (room.classList.contains('is-locked')) return;
                 
-                savedY = window.scrollY; // 记下现在的滚动高度
-                room.classList.add('locked');
+                savedScrollPosition = window.scrollY; // 记忆！
+                room.classList.add('is-locked');
                 
-                // 隐藏UI
                 mainTitle.style.opacity = '0';
                 footer.style.opacity = '0';
                 bgmToggle.style.opacity = '0';
 
-                // 聚焦效果
-                artItems.forEach(other => { if(other !== item) other.classList.add('is-faded'); });
+                artItems.forEach(other => { if (other !== item) other.classList.add('is-faded'); });
                 item.classList.add('is-selected');
 
                 if (window.innerWidth > 768) {
-                    item.style.top = '50vh'; item.style.left = '50vw';
-                    item.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                    item.style.top = '50vh';
+                    item.style.left = '50vw';
+                    item.style.transform = `translate(-50%, -50%) scale(1.2)`;
                 }
 
-                setTimeout(() => item.querySelector('.series-title').classList.add('show'), 400);
-                setTimeout(() => openGallery(item.dataset.series), 1200);
+                setTimeout(() => { item.querySelector('.series-title').classList.add('show'); }, 500);
+                setTimeout(() => { openGallery(item.dataset.series); }, 1500);
             });
         });
 
-        function openGallery(key) {
+        function openGallery(seriesKey) {
             galleryContent.innerHTML = '';
-            seriesData[key].forEach(art => {
-                const div = document.createElement('div');
-                div.className = 'gallery-item';
-                div.innerHTML = `<img src="${art.src}">`;
-                galleryContent.appendChild(div);
+            const artworks = seriesData[seriesKey] || [];
+            artworks.forEach(art => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'gallery-item';
+                wrapper.innerHTML = `<img src="${art.src}">`;
+                galleryContent.appendChild(wrapper);
             });
             gallery.classList.add('active');
             
-            // 详情页滚动到顶
-            gallery.scrollTop = 0;
-
-            const obs = new IntersectionObserver(entries => {
-                entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('reveal'); });
-            }, {threshold: 0.1});
-            setTimeout(() => {
-                document.querySelectorAll('.gallery-item').forEach(el => obs.observe(el));
-            }, 100);
+            // 图片渐次显现
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('reveal'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.gallery-item').forEach(el => observer.observe(el));
         }
 
-        // 关闭系列返回
         function closeGallery() {
             gallery.classList.remove('active');
-            
             setTimeout(() => {
-                // 【核心修复】瞬间回到记下的位置
-                window.scrollTo(0, savedY);
+                window.scrollTo(0, savedScrollPosition); // 关键：滚回去！
 
-                room.classList.remove('locked');
+                room.classList.remove('is-locked');
                 mainTitle.style.opacity = '1';
                 footer.style.opacity = '1';
                 bgmToggle.style.opacity = '1';
@@ -278,16 +373,15 @@
                 artItems.forEach(item => {
                     item.classList.remove('is-faded', 'is-selected');
                     item.style.top = ''; item.style.left = ''; item.style.transform = '';
-                    const st = item.querySelector('.series-title');
-                    if(st) st.classList.remove('show');
+                    const title = item.querySelector('.series-title');
+                    if (title) title.classList.remove('show');
                 });
-            }, 500); // 这个时间缩短了，让反应更快
+            }, 500);
         }
 
-        // BGM 切换
         bgmToggle.onclick = (e) => {
             e.stopPropagation();
-            if(isBgmPlaying) { bgm.pause(); bgmToggle.innerText = 'music · off'; }
+            if (isBgmPlaying) { bgm.pause(); bgmToggle.innerText = 'music · off'; }
             else { bgm.play(); bgmToggle.innerText = 'music · on'; }
             isBgmPlaying = !isBgmPlaying;
         };
