@@ -33,12 +33,16 @@
             transition: opacity 1s ease 0.5s;
         }
 
-        #bgm-toggle:hover { color: #fff; }
+        #bgm-toggle:hover {
+            color: #fff;
+        }
 
         #entrance {
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             background-color: var(--bg-color);
             display: flex;
             flex-direction: column;
@@ -72,7 +76,6 @@
             letter-spacing: 0.05em;
         }
 
-        /* 你的 click to enter 还在最下面 */
         #entrance .prompt {
             position: absolute;
             bottom: 10%;
@@ -106,14 +109,17 @@
             transition: color 0.3s ease;
         }
 
-        footer a:hover { color: #fff; }
+        footer a:hover {
+            color: #fff;
+        }
 
         body {
             background-color: var(--bg-color);
             color: var(--primary-text);
             font-family: var(--font-main);
-            overflow-x: hidden;
+            overflow: hidden;
             width: 100vw;
+            height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -174,8 +180,32 @@
             z-index: 10;
         }
 
+        @keyframes drift1 { 0% {transform: translate(0,0);} 50% {transform: translate(-2%,2%);} 100% {transform: translate(0,0);} }
+        @keyframes drift2 { 0% {transform: translate(0,0);} 50% {transform: translate(2%,-2%);} 100% {transform: translate(0,0);} }
+        .anim-drift.type-1 { animation: drift1 14s ease-in-out infinite; }
+        .anim-drift.type-2 { animation: drift2 18s ease-in-out infinite; }
+
+        @keyframes breathe { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
+        .anim-breathe.type-1 { animation: breathe 10s ease-in-out infinite; }
+        .anim-breathe.type-2 { animation: breathe 12s ease-in-out infinite; }
+
+        @keyframes glow { 0% {opacity: 0.85;} 50% {opacity: 1;} 100% {opacity: 0.85;} }
+        .anim-glow { animation: glow 9s ease-in-out infinite; }
+
+        #emotional-room:not(.is-locked):hover .art-locator:not(:hover) { opacity: 0.35; }
+        #emotional-room:not(.is-locked) .art-locator:hover { opacity: 1; z-index: 10 !important; }
+        #emotional-room:not(.is-locked) .art-locator:hover .anim-drift,
+        #emotional-room:not(.is-locked) .art-locator:hover .anim-breathe,
+        #emotional-room:not(.is-locked) .art-locator:hover .anim-glow { animation-play-state: paused !important; }
+        #emotional-room:not(.is-locked) .art-locator:hover .anim-breathe { transform: scale(1.03); transition: transform 0.4s ease; }
+        #emotional-room:not(.is-locked) .art-locator:hover img { filter: grayscale(0%); }
+
         .art-locator.is-faded { opacity: 0 !important; pointer-events: none; }
         .art-locator.is-selected { opacity: 1 !important; z-index: 100 !important; }
+        .art-locator.is-selected .anim-drift,
+        .art-locator.is-selected .anim-breathe,
+        .art-locator.is-selected .anim-glow { animation: none !important; transform: none !important; }
+        .art-locator.is-selected img { filter: grayscale(0%); }
         .art-locator.is-selected .series-title.show { opacity: 1; }
 
         #series-gallery {
@@ -185,9 +215,8 @@
             overflow-y: auto; overflow-x: hidden;
             z-index: 200;
             opacity: 0; visibility: hidden;
-            transition: opacity 1s ease, visibility 1s;
+            transition: opacity 1.5s ease, visibility 1.5s;
             padding: 20vh 10vw;
-            -webkit-overflow-scrolling: touch;
         }
 
         #series-gallery.active { opacity: 1; visibility: visible; }
@@ -200,6 +229,7 @@
             cursor: pointer; transition: color 0.3s;
             z-index: 210;
         }
+        .gallery-close:hover { color: #fff; }
 
         .gallery-content {
             display: flex; flex-direction: column; align-items: center;
@@ -207,33 +237,124 @@
         }
 
         .gallery-item {
-            width: 100%;
+            width: 100%; cursor: pointer;
             opacity: 0; transform: translateY(30px);
             transition: all 1s ease;
         }
         .gallery-item.reveal { opacity: 1; transform: translateY(0); }
-        .gallery-item img { width: 100%; display: block; }
+        .gallery-item img { width: 100%; display: block; transition: transform 0.4s ease; }
+        .gallery-item:hover img { transform: scale(1.02); }
 
+        #lightbox {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 300;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s;
+            cursor: zoom-out;
+        }
+
+        #lightbox.active { opacity: 1; visibility: visible; }
+
+        .lb-content {
+            max-width: 85vw; max-height: 85vh; text-align: center;
+        }
+        .lb-img { max-width: 100%; max-height: 75vh; object-fit: contain; }
+
+        .lb-info {
+            margin-top: 30px; opacity: 0;
+            transition: opacity 1s ease 0.6s;
+        }
+        .lb-info.revealed { opacity: 1; }
+
+        .lb-title { font-size: 1rem; font-style: italic; margin-bottom: 6px; color: var(--primary-text); }
+        .lb-meta { font-size: 0.8rem; color: var(--secondary-text); letter-spacing: 0.1em; }
+
+        /* 移动端适配 */
         @media (max-width: 768px) {
-            body { overflow-y: auto; height: auto; }
+            body {
+                overflow-y: auto;
+                height: auto;
+                padding-bottom: 10vh;
+            }
+
             #emotional-room {
                 height: auto;
-                display: flex; flex-direction: column; align-items: center;
-                padding-top: 15vh; padding-bottom: 10vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-top: 15vh;
+                padding-bottom: 10vh;
             }
-            .main-title { position: relative; top: 0; transform: none; margin-bottom: 5vh; }
+
+            .main-title {
+                position: relative;
+                top: 0;
+                left: 0;
+                transform: none;
+                text-align: center;
+                margin-bottom: 5vh;
+            }
+
+            /* 默认所有图片卡片：相对定位、居中排列 */
             .art-locator {
-                position: relative !important; top: auto !important; left: auto !important;
-                transform: none !important; width: 75vw !important; margin: 40px auto !important;
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                width: 70vw !important;
+                margin: 30px auto !important;
+                display: block;
             }
+
+            /* 选中状态：fixed定位居中，覆盖上面的relative */
             .art-locator.is-selected {
-                position: fixed !important; top: 50% !important; left: 50% !important;
-                transform: translate(-50%, -50%) !important; width: 85vw !important; z-index: 100 !important;
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: 85vw !important;
+                margin: 0 !important;
+                z-index: 100 !important;
             }
+
+            /* 修复文字标题与图片重叠：移到图片正下方 */
             .series-title {
-                position: absolute !important; top: auto !important; bottom: -35px !important;
-                left: 50% !important; transform: translateX(-50%) !important;
+                position: absolute !important;
+                top: auto !important;
+                bottom: -28px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
                 font-size: 0.8rem !important;
+                white-space: nowrap !important;
+                text-shadow: none !important;
+            }
+
+            /* 入口页在手机端也缩小 */
+            #entrance .logo {
+                font-size: 1.2rem;
+                letter-spacing: 0.3em;
+            }
+
+            #entrance .tagline {
+                font-size: 0.8rem;
+            }
+
+            .gallery-close {
+                top: 20px;
+                right: 20px;
+            }
+
+            /* 移动端BGM开关位置调整，避免和footer重叠 */
+            #bgm-toggle {
+                bottom: 80px;
+                right: 20px;
+            }
+
+            footer {
+                bottom: 20px;
             }
         }
     </style>
@@ -242,7 +363,9 @@
 
     <div id="entrance">
         <div class="logo">YEONG</div>
-        <div class="tagline">Nothing too loud here</div>
+        <div class="tagline">
+            Nothing too loud here<br>
+        </div>
         <div class="prompt">click to enter</div>
     </div>
 
@@ -250,28 +373,52 @@
 
     <div id="emotional-room">
         <div class="art-locator" id="item-ecstasy" data-series="ecstasy">
-            <img src="Nothing but the Night.jpg">
-            <div class="series-title">ecstasy that ends in nothing</div>
+            <div class="anim-drift type-1">
+                <div class="anim-breathe type-1">
+                    <img class="anim-glow" src="Nothing but the Night.jpg" alt="Ecstasy">
+                    <div class="series-title">ecstasy that ends in nothing</div>
+                </div>
+            </div>
         </div>
         <div class="art-locator" id="item-greydays" data-series="greydays">
-            <img src="My body holds a river.jpg">
-            <div class="series-title">grey days</div>
+            <div class="anim-drift type-2">
+                <div class="anim-breathe type-2">
+                    <img class="anim-glow" src="My body holds a river.jpg" alt="Grey Days">
+                    <div class="series-title">grey days</div>
+                </div>
+            </div>
         </div>
         <div class="art-locator" id="item-untitled" data-series="untitled">
-            <img src="Clean us like the rain in spring.png">
-            <div class="series-title">untitled</div>
+            <div class="anim-drift type-2">
+                <div class="anim-breathe type-1">
+                    <img class="anim-glow" src="Clean us like the rain in spring.png" alt="Untitled">
+                    <div class="series-title">untitled</div>
+                </div>
+            </div>
         </div>
         <div class="art-locator" id="item-elsewhere" data-series="elsewhere">
-            <img src="I saw the cracks in your halo and stayed.jpg">
-            <div class="series-title">elsewhere</div>
+            <div class="anim-drift type-1">
+                <div class="anim-breathe type-2">
+                    <img class="anim-glow" src="I saw the cracks in your halo and stayed.jpg" alt="Elsewhere">
+                    <div class="series-title">elsewhere</div>
+                </div>
+            </div>
         </div>
         <div class="art-locator" id="item-growth" data-series="growth">
-            <img src="The flowers don't know I'm dying here.jpg">
-            <div class="series-title">do i still got time to grow</div>
+            <div class="anim-drift type-1">
+                <div class="anim-breathe type-1">
+                    <img class="anim-glow" src="The flowers don't know I'm dying here.jpg" alt="Growth">
+                    <div class="series-title">do i still got time to grow</div>
+                </div>
+            </div>
         </div>
         <div class="art-locator" id="item-dream" data-series="dream">
-            <img src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png">
-            <div class="series-title">dream only</div>
+            <div class="anim-drift type-2">
+                <div class="anim-breathe type-2">
+                    <img class="anim-glow" src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" alt="Dream">
+                    <div class="series-title">dream only</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -280,64 +427,161 @@
         <div class="gallery-content" id="gallery-content"></div>
     </div>
 
-    <footer><a href="https://www.instagram.com/xzua.no?igsh=dTl2YzI2ZXNnbWpk" target="_blank">instagram</a></footer>
+    <div id="lightbox">
+        <div class="lb-content">
+            <img src="" class="lb-img" id="lb-img">
+            <div class="lb-info" id="lb-info">
+                <div class="lb-title" id="lb-title"></div>
+                <div class="lb-meta" id="lb-meta"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <a href="https://www.instagram.com/xzua.no?igsh=dTl2YzI2ZXNnbWpk" target="_blank" rel="noopener noreferrer">instagram</a>
+    </footer>
+
+    <!-- BGM 音乐开关 -->
     <div id="bgm-toggle">music · off</div>
-    <audio id="bgm" loop preload="auto"><source src="致青春.mp3" type="audio/mpeg"></audio>
+
+    <!-- 背景音乐文件 -->
+    <audio id="bgm" loop preload="auto">
+        <source src="致青春.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
+        // ===== 核心元素获取 =====
         const entrance = document.getElementById('entrance');
         const room = document.getElementById('emotional-room');
         const mainTitle = document.getElementById('main-title');
         const footer = document.querySelector('footer');
         const bgmToggle = document.getElementById('bgm-toggle');
         const bgm = document.getElementById('bgm');
-        const gallery = document.getElementById('series-gallery');
-        const galleryContent = document.getElementById('gallery-content');
-        const artItems = document.querySelectorAll('.art-locator');
-
         let isBgmPlaying = false;
-        let savedScrollPosition = 0; // 记忆位置
 
-        entrance.addEventListener('click', () => {
-            entrance.classList.add('hidden');
-            room.style.opacity = '1';
-            mainTitle.style.opacity = '1';
-            footer.style.opacity = '1';
-            bgmToggle.style.opacity = '1';
-            bgm.play().then(() => { isBgmPlaying = true; bgmToggle.innerText = 'music · on'; });
+        // ===== BGM 背景音乐控制 =====
+        bgm.volume = 0.3;
+
+        entrance.addEventListener('click', function initBgm() {
+            bgm.play().then(() => {
+                isBgmPlaying = true;
+                bgmToggle.innerText = 'music · on';
+            }).catch(e => {
+                console.log('BGM自动播放被浏览器限制，点击页面任意处可播放', e);
+            });
+        }, { once: true });
+
+        document.addEventListener('click', function fallbackBgm() {
+            if (!isBgmPlaying) {
+                bgm.play().then(() => {
+                    isBgmPlaying = true;
+                    bgmToggle.innerText = 'music · on';
+                }).catch(e => console.log('BGM播放失败：', e));
+            }
+        }, { once: true });
+
+        bgmToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isBgmPlaying) {
+                bgm.pause();
+                bgmToggle.innerText = 'music · off';
+            } else {
+                bgm.play();
+                bgmToggle.innerText = 'music · on';
+            }
+            isBgmPlaying = !isBgmPlaying;
         });
 
-        // 恢复你所有的图片数据
+        // ===== 入口页进入逻辑 =====
+        entrance.addEventListener('click', () => {
+            entrance.classList.add('hidden');
+            setTimeout(() => {
+                room.style.opacity = '1';
+                mainTitle.style.opacity = '1';
+                footer.style.opacity = '1';
+                bgmToggle.style.opacity = '1';
+            }, 200);
+        });
+
         const seriesData = {
-            'untitled': [{ src: "Clean us like the rain in spring.png" }, { src: "Hiding in a disguise of an ever giving flower.png" }],
-            'ecstasy': [{ src: "Nothing but the Night.jpg" }, { src: "The Running and Nothing.jpg" }, { src: "No feelings Just lies Everywhere.jpg" }, { src: "They take my body Steal my thoughts. Call it justice Call me guilty.jpeg" }, { src: "Mystery Remains.jpg" }, { src: "Give me everything.jpg" }],
-            'greydays': [{ src: "That's where I wanna be.jpg" }, { src: "s There Someone Else.jpg" }, { src: "Beyond the Bars the Water Sings.jpg" }, { src: "My body holds a river.jpg" }, { src: "For You a Thousand Times Over.jpg" }],
-            'elsewhere': [{ src: "Breathe Air without weight.png" }, { src: "I saw the cracks in your halo and stayed.jpg" }, { src: "我怀疑人们的生活 有所掩饰.png" }, { src: "They don't want me They want my performance.jpg" }, { src: "Soft Under Dim Light.png" }, { src: "Almost there Almost gone.jpg" }],
-            'growth': [{ src: "Growth Archive.jpg" }, { src: "00 00.jpg" }, { src: "Stuck in the ticking.jpg" }, { src: "This can't be right.jpg" }, { src: "No One  Not One Gone.jpg" }, { src: "It gets better' but when.jpg" }, { src: "Growth Archive 2.jpg" }, { src: "hold up hold up.jpg" }, { src: "The flowers don't know I'm dying here.jpg" }, { src: "No Child Left Behind.jpg" }, { src: "No one knows.jpg" }],
-            'dream': [{ src: "mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" }]
+            'untitled': [
+                { src: "Clean us like the rain in spring.png", title: "Clean us like the rain in spring", year: '2025', medium: 'Oil on Canvas' },
+                { src: "Hiding in a disguise of an ever giving flower.png", title: "Hiding in a disguise of an ever giving flower", year: '2025', medium: 'Oil on Canvas' }
+            ],
+            'ecstasy': [
+                { src: "Nothing but the Night.jpg", title: "Nothing but the Night", year: '2024', medium: 'Lithograph on paper' },
+                { src: "The Running and Nothing.jpg", title: "The Running and Nothing Else", year: '2024', medium: 'Lithograph on paper' },
+                { src: "No feelings Just lies Everywhere.jpg", title: "No feelings Just lies Everywhere", year: '2024', medium: 'Lithograph on paper' },
+                { src: "They take my body Steal my thoughts. Call it justice Call me guilty.jpeg", title: "They take my body Steal my thoughts Call it justice Call me guilty", year: '2024', medium: 'Lithograph on paper' },
+                { src: "Mystery Remains.jpg", title: "Mystery Remains", year: '2024', medium: 'Lithograph on paper' },
+                { src: "Give me everything.jpg", title: "Give me everything", year: '2019', medium: 'Lithograph on paper' }
+            ],
+            'greydays': [
+                { src: "That's where I wanna be.jpg", title: "That's where I wanna be", year: '2018', medium: 'Oil on Canvas' },
+                { src: "s There Someone Else.jpg", title: "Is There Someone Else?", year: '2022', medium: 'Oil on linen' },
+                { src: "Beyond the Bars the Water Sings.jpg", title: "Beyond the Bars the Water Sings", year: '2022', medium: 'Oil on canvas' },
+                { src: "My body holds a river.jpg", title: "My body holds a river", year: '2022', medium: 'Oil on paper' },
+                { src: "For You a Thousand Times Over.jpg", title: "For You, a Thousand Times Over", year: '2021', medium: 'Mixed Media on Paper' }
+            ],
+            'elsewhere': [
+                { src: "Breathe Air without weight.png", title: "Breathe Air without weight", year: '2025', medium: 'Oil on Canvas' },
+                { src: "I saw the cracks in your halo and stayed.jpg", title: "I saw the cracks in your halo and stayed", year: '2025', medium: 'Oil on Canvas' },
+                { src: "我怀疑人们的生活 有所掩饰.png", title: "我怀疑人们的生活 有所掩饰", year: '2025', medium: 'Oil on Canvas' },
+                { src: "They don't want me They want my performance.jpg", title: "They don't want me They want my performance", year: '2025', medium: 'Oil on Canvas' },
+                { src: "Soft Under Dim Light.png", title: "Soft Under Dim Light", year: '2025', medium: 'Oil on Canvas' },
+                { src: "Almost there Almost gone.jpg", title: "Almost there Almost gone", year: '2025', medium: 'Oil on Canvas' }
+            ],
+            'growth': [
+                { src: "Growth Archive.jpg", title: "Growth Archive", year: '2019', medium: 'Mixed Media on Paper' },
+                { src: "00 00.jpg", title: "00:00", year: '2019', medium: 'Oil on Canvas' },
+                { src: "Stuck in the ticking.jpg", title: "Stuck in the ticking", year: '2019', medium: 'Watercolor on Paper' },
+                { src: "This can't be right.jpg", title: "This can't be right", year: '2019', medium: 'Watercolor on Paper' },
+                { src: "No One  Not One Gone.jpg", title: "No One Not One Gone?", year: '2019', medium: 'Mixed Media on Paper' },
+                { src: "It gets better' but when.jpg", title: "It gets better' but when?", year: '2019', medium: 'Mixed Media on Paper' },
+                { src: "Growth Archive 2.jpg", title: "Growth Archive 2", year: '2019', medium: 'Mixed Media on Paper' },
+                { src: "hold up hold up.jpg", title: "hold up hold up", year: '2019', medium: 'Watercolor on paper' },
+                { src: "The flowers don't know I'm dying here.jpg", title: "The flowers don't know I'm dying here", year: '2019', medium: 'Watercolor and colored pencil on paper' },
+                { src: "No Child Left Behind.jpg", title: "No Child Left Behind", year: '2019', medium: 'Watercolor on paper' },
+                { src: "No one knows.jpg", title: "No one knows", year: '2019', medium: 'Acrylic on canvas' }
+            ],
+            'dream': [
+                { src: "mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png", title: "In this world right now I only have you", year: '2018', medium: 'Procreate on iPad' }
+            ]
         };
+
+        const artItems = document.querySelectorAll('.art-locator');
+        const gallery = document.getElementById('series-gallery');
+        const galleryContent = document.getElementById('gallery-content');
+
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lb-img');
+        const lbInfo = document.getElementById('lb-info');
+        const lbTitle = document.getElementById('lb-title');
+        const lbMeta = document.getElementById('lb-meta');
+        let lightboxTimeout;
 
         artItems.forEach(item => {
             item.addEventListener('click', function() {
                 if (room.classList.contains('is-locked')) return;
-                
-                savedScrollPosition = window.scrollY; // 记忆！
                 room.classList.add('is-locked');
-                
                 mainTitle.style.opacity = '0';
                 footer.style.opacity = '0';
                 bgmToggle.style.opacity = '0';
 
                 artItems.forEach(other => { if (other !== item) other.classList.add('is-faded'); });
+
                 item.classList.add('is-selected');
 
                 if (window.innerWidth > 768) {
+                    const scaleValue = 1.2;
                     item.style.top = '50vh';
                     item.style.left = '50vw';
-                    item.style.transform = `translate(-50%, -50%) scale(1.2)`;
+                    item.style.transform = `translate(-50%, -50%) scale(${scaleValue})`;
                 }
 
-                setTimeout(() => { item.querySelector('.series-title').classList.add('show'); }, 500);
+                setTimeout(() => {
+                    item.querySelector('.series-title').classList.add('show');
+                }, 500);
                 setTimeout(() => { openGallery(item.dataset.series); }, 1500);
             });
         });
@@ -345,46 +589,87 @@
         function openGallery(seriesKey) {
             galleryContent.innerHTML = '';
             const artworks = seriesData[seriesKey] || [];
+
             artworks.forEach(art => {
                 const wrapper = document.createElement('div');
-                wrapper.className = 'gallery-item';
-                wrapper.innerHTML = `<img src="${art.src}">`;
+                wrapper.classList.add('gallery-item');
+
+                const img = document.createElement('img');
+                img.src = art.src;
+                img.alt = art.title;
+
+                wrapper.addEventListener('click', () => openLightbox(art));
+
+                wrapper.appendChild(img);
                 galleryContent.appendChild(wrapper);
             });
+
             gallery.classList.add('active');
-            
-            // 图片渐次显现
+            // ✅ 修复：移动端保持可滚动，桌面端才锁定body
+            if (window.innerWidth > 768) {
+                document.body.style.overflow = 'auto';
+            }
+
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('reveal'); });
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('reveal'); });
             }, { threshold: 0.1 });
-            document.querySelectorAll('.gallery-item').forEach(el => observer.observe(el));
+
+            setTimeout(() => {
+                galleryContent.querySelectorAll('.gallery-item').forEach(el => observer.observe(el));
+            }, 100);
+        }
+
+        function openLightbox(art) {
+            lbImg.src = art.src;
+            lbTitle.innerText = art.title;
+            lbMeta.innerText = `${art.year} — ${art.medium}`;
+
+            lightbox.classList.add('active');
+
+            clearTimeout(lightboxTimeout);
+            lightboxTimeout = setTimeout(() => {
+                lbInfo.classList.add('revealed');
+            }, 600);
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lbInfo.classList.remove('revealed');
+            clearTimeout(lightboxTimeout);
+            setTimeout(() => { lbImg.src = ''; }, 400);
         }
 
         function closeGallery() {
             gallery.classList.remove('active');
+            // ✅ 核心修复：移动端退出gallery后不锁定overflow，保持可滚动
+            if (window.innerWidth > 768) {
+                document.body.style.overflow = 'hidden';
+            }
             setTimeout(() => {
-                window.scrollTo(0, savedScrollPosition); // 关键：滚回去！
-
                 room.classList.remove('is-locked');
                 mainTitle.style.opacity = '1';
                 footer.style.opacity = '1';
                 bgmToggle.style.opacity = '1';
-                
                 artItems.forEach(item => {
                     item.classList.remove('is-faded', 'is-selected');
-                    item.style.top = ''; item.style.left = ''; item.style.transform = '';
+                    if (window.innerWidth > 768) {
+                        item.style.top = '';
+                        item.style.left = '';
+                        item.style.transform = '';
+                    }
                     const title = item.querySelector('.series-title');
                     if (title) title.classList.remove('show');
                 });
-            }, 500);
+            }, 1000);
         }
 
-        bgmToggle.onclick = (e) => {
-            e.stopPropagation();
-            if (isBgmPlaying) { bgm.pause(); bgmToggle.innerText = 'music · off'; }
-            else { bgm.play(); bgmToggle.innerText = 'music · on'; }
-            isBgmPlaying = !isBgmPlaying;
-        };
+        lightbox.addEventListener('click', closeLightbox);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                if (lightbox.classList.contains('active')) closeLightbox();
+                else if (gallery.classList.contains('active')) closeGallery();
+            }
+        });
     </script>
 </body>
 </html>
