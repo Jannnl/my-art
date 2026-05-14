@@ -18,7 +18,55 @@
             padding: 0;
         }
 
-        /* ===== BGM 音乐开关样式 ===== */
+        /* ===== 1. 胶片噪点效果 (Film Grain) - 增加情绪质感 ===== */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 9998;
+            animation: grain 8s steps(10) infinite;
+        }
+
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -10%); }
+            30% { transform: translate(7%, -25%); }
+            50% { transform: translate(-15%, 10%); }
+            70% { transform: translate(0%, 15%); }
+            90% { transform: translate(-10%, 10%); }
+        }
+
+        /* ===== 2. 定制光标 (Custom Cursor) - 仅在电脑端生效 ===== */
+        @media (pointer: fine) {
+            body, #entrance, .art-locator, .gallery-close, #bgm-toggle, footer a { 
+                cursor: none !important; 
+            }
+            
+            .custom-cursor {
+                position: fixed;
+                top: 0; left: 0;
+                width: 8px; height: 8px;
+                background-color: var(--secondary-text);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                z-index: 10000;
+                transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+                mix-blend-mode: difference;
+            }
+            
+            .custom-cursor.is-hover {
+                width: 45px; height: 45px;
+                background-color: transparent;
+                border: 1px solid var(--secondary-text);
+            }
+        }
+
+        /* ===== 原始样式部分 ===== */
         #bgm-toggle {
             position: fixed;
             bottom: 30px;
@@ -33,56 +81,33 @@
             transition: opacity 1s ease 0.5s;
         }
 
-        #bgm-toggle:hover {
-            color: #fff;
-        }
+        #bgm-toggle:hover { color: #fff; }
 
         #entrance {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 9999;
             transition: opacity 0.6s ease-out, visibility 0.6s;
-            cursor: pointer;
         }
 
-        #entrance.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
+        #entrance.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         #entrance .logo {
-            font-size: 1.4rem;
-            font-weight: 400;
-            margin-bottom: 0.8rem;
-            letter-spacing: 0.35em;
-            color: var(--primary-text);
+            font-size: 1.4rem; font-weight: 400; margin-bottom: 0.8rem;
+            letter-spacing: 0.35em; color: var(--primary-text);
         }
 
         #entrance .tagline {
-            font-size: 0.85rem;
-            color: var(--secondary-text);
-            text-align: center;
-            margin-bottom: 3rem;
-            line-height: 1.8;
-            letter-spacing: 0.05em;
+            font-size: 0.85rem; color: var(--secondary-text); text-align: center;
+            margin-bottom: 3rem; line-height: 1.8; letter-spacing: 0.05em;
         }
 
         #entrance .prompt {
-            position: absolute;
-            bottom: 10%;
-            font-size: 0.75rem;
-            color: var(--secondary-text);
-            opacity: 0.6;
-            letter-spacing: 0.1em;
+            position: absolute; bottom: 10%; font-size: 0.75rem;
+            color: var(--secondary-text); opacity: 0.6; letter-spacing: 0.1em;
             animation: fadePulse 2s infinite;
         }
 
@@ -92,62 +117,42 @@
         }
 
         footer {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 99;
-            opacity: 0;
-            transition: opacity 1s ease 0.5s;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 99; opacity: 0; transition: opacity 1s ease 0.5s;
         }
 
-        footer a {
-            color: var(--secondary-text);
-            text-decoration: none;
-            font-size: 0.85rem;
-            letter-spacing: 0.1em;
-            transition: color 0.3s ease;
-        }
-
-        footer a:hover {
-            color: #fff;
-        }
+        footer a { color: var(--secondary-text); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.1em; transition: color 0.3s ease; }
+        footer a:hover { color: #fff; }
 
         body {
             background-color: var(--bg-color);
             color: var(--primary-text);
             font-family: var(--font-main);
             overflow: hidden;
-            width: 100vw;
-            height: 100vh;
+            width: 100vw; height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
         .main-title {
-            position: absolute;
-            top: 8vh; left: 50%;
-            transform: translateX(-50%);
-            font-size: 1rem;
-            letter-spacing: 0.35em;
-            font-weight: 400;
-            color: var(--primary-text);
-            z-index: 10;
-            opacity: 0;
+            position: absolute; top: 8vh; left: 50%; transform: translateX(-50%);
+            font-size: 1rem; letter-spacing: 0.35em; font-weight: 400;
+            color: var(--primary-text); z-index: 10; opacity: 0;
             transition: opacity 1s ease 0.3s;
         }
 
+        /* Room 容器，用于承载视差效果 */
         #emotional-room {
             position: relative;
             width: 100vw; height: 100vh;
             opacity: 0;
             transition: opacity 1s ease 0.2s;
+            transform-origin: center center;
         }
 
         .art-locator {
             position: absolute;
             transform: translate(-50%, -50%);
             transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            cursor: pointer;
             opacity: 0.85;
         }
 
@@ -158,204 +163,67 @@
         #item-growth    { top: 78vh; left: 28vw; width: 11vw; z-index: 1; }
         #item-dream     { top: 78vh; left: 72vw; width: 10vw; z-index: 1; }
 
-        .art-locator img {
-            width: 100%; display: block;
-            filter: grayscale(20%);
-            transition: filter 0.4s ease;
-        }
+        .art-locator img { width: 100%; display: block; filter: grayscale(20%); transition: filter 0.4s ease; }
 
         .series-title {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.2rem;
-            letter-spacing: 0.15em;
-            color: #fff;
-            text-transform: lowercase;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-            white-space: nowrap;
-            z-index: 10;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 1.2rem; letter-spacing: 0.15em; color: #fff; text-transform: lowercase;
+            opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8); white-space: nowrap; z-index: 10;
         }
 
+        /* 动画 */
         @keyframes drift1 { 0% {transform: translate(0,0);} 50% {transform: translate(-2%,2%);} 100% {transform: translate(0,0);} }
         @keyframes drift2 { 0% {transform: translate(0,0);} 50% {transform: translate(2%,-2%);} 100% {transform: translate(0,0);} }
         .anim-drift.type-1 { animation: drift1 14s ease-in-out infinite; }
         .anim-drift.type-2 { animation: drift2 18s ease-in-out infinite; }
-
         @keyframes breathe { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
         .anim-breathe.type-1 { animation: breathe 10s ease-in-out infinite; }
         .anim-breathe.type-2 { animation: breathe 12s ease-in-out infinite; }
-
         @keyframes glow { 0% {opacity: 0.85;} 50% {opacity: 1;} 100% {opacity: 0.85;} }
         .anim-glow { animation: glow 9s ease-in-out infinite; }
 
         #emotional-room:not(.is-locked):hover .art-locator:not(:hover) { opacity: 0.35; }
         #emotional-room:not(.is-locked) .art-locator:hover { opacity: 1; z-index: 10 !important; }
-        #emotional-room:not(.is-locked) .art-locator:hover .anim-drift,
-        #emotional-room:not(.is-locked) .art-locator:hover .anim-breathe,
-        #emotional-room:not(.is-locked) .art-locator:hover .anim-glow { animation-play-state: paused !important; }
-        #emotional-room:not(.is-locked) .art-locator:hover .anim-breathe { transform: scale(1.03); transition: transform 0.4s ease; }
         #emotional-room:not(.is-locked) .art-locator:hover img { filter: grayscale(0%); }
 
         .art-locator.is-faded { opacity: 0 !important; pointer-events: none; }
         .art-locator.is-selected { opacity: 1 !important; z-index: 100 !important; }
-        .art-locator.is-selected .anim-drift,
-        .art-locator.is-selected .anim-breathe,
-        .art-locator.is-selected .anim-glow { animation: none !important; transform: none !important; }
-        .art-locator.is-selected img { filter: grayscale(0%); }
         .art-locator.is-selected .series-title.show { opacity: 1; }
 
         #series-gallery {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000;
-            overflow-y: auto; overflow-x: hidden;
-            z-index: 200;
-            opacity: 0; visibility: hidden;
-            transition: opacity 1.5s ease, visibility 1.5s;
-            padding: 20vh 10vw;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; overflow-y: auto; overflow-x: hidden; z-index: 200;
+            opacity: 0; visibility: hidden; transition: opacity 1.5s ease, visibility 1.5s; padding: 20vh 10vw;
         }
-
         #series-gallery.active { opacity: 1; visibility: visible; }
-
-        .gallery-close {
-            position: fixed;
-            top: 40px; right: 50px;
-            color: var(--secondary-text);
-            font-size: 0.8rem; letter-spacing: 0.1em;
-            cursor: pointer; transition: color 0.3s;
-            z-index: 210;
-        }
-        .gallery-close:hover { color: #fff; }
-
-        .gallery-content {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 15vh; max-width: 900px; margin: 0 auto;
-        }
-
-        .gallery-item {
-            width: 100%; cursor: pointer;
-            opacity: 0; transform: translateY(30px);
-            transition: all 1s ease;
-        }
+        .gallery-close { position: fixed; top: 40px; right: 50px; color: var(--secondary-text); font-size: 0.8rem; letter-spacing: 0.1em; z-index: 210; }
+        .gallery-content { display: flex; flex-direction: column; align-items: center; gap: 15vh; max-width: 900px; margin: 0 auto; }
+        .gallery-item { width: 100%; opacity: 0; transform: translateY(30px); transition: all 1s ease; }
         .gallery-item.reveal { opacity: 1; transform: translateY(0); }
         .gallery-item img { width: 100%; display: block; transition: transform 0.4s ease; }
-        .gallery-item:hover img { transform: scale(1.02); }
 
         #lightbox {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 300;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s;
-            cursor: zoom-out;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.95); z-index: 300; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s;
         }
-
         #lightbox.active { opacity: 1; visibility: visible; }
-
-        .lb-content {
-            max-width: 85vw; max-height: 85vh; text-align: center;
-        }
+        .lb-content { max-width: 85vw; max-height: 85vh; text-align: center; }
         .lb-img { max-width: 100%; max-height: 75vh; object-fit: contain; }
-
-        .lb-info {
-            margin-top: 30px; opacity: 0;
-            transition: opacity 1s ease 0.6s;
-        }
+        .lb-info { margin-top: 30px; opacity: 0; transition: opacity 1s ease 0.6s; }
         .lb-info.revealed { opacity: 1; }
-
         .lb-title { font-size: 1rem; font-style: italic; margin-bottom: 6px; color: var(--primary-text); }
         .lb-meta { font-size: 0.8rem; color: var(--secondary-text); letter-spacing: 0.1em; }
 
-        /* 移动端适配 */
         @media (max-width: 768px) {
-            body {
-                overflow-y: auto;
-                height: auto;
-                padding-bottom: 10vh;
-            }
-
-            #emotional-room {
-                height: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding-top: 15vh;
-                padding-bottom: 10vh;
-            }
-
-            .main-title {
-                position: relative;
-                top: 0;
-                left: 0;
-                transform: none;
-                text-align: center;
-                margin-bottom: 5vh;
-            }
-
-            /* 默认所有图片卡片：相对定位、居中排列 */
-            .art-locator {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                transform: none !important;
-                width: 70vw !important;
-                margin: 30px auto !important;
-                display: block;
-            }
-
-            /* 选中状态：fixed定位居中，覆盖上面的relative */
-            .art-locator.is-selected {
-                position: fixed !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                width: 85vw !important;
-                margin: 0 !important;
-                z-index: 100 !important;
-            }
-
-            /* 修复文字标题与图片重叠：移到图片正下方 */
-            .series-title {
-                position: absolute !important;
-                top: auto !important;
-                bottom: -28px !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-                font-size: 0.8rem !important;
-                white-space: nowrap !important;
-                text-shadow: none !important;
-            }
-
-            /* 入口页在手机端也缩小 */
-            #entrance .logo {
-                font-size: 1.2rem;
-                letter-spacing: 0.3em;
-            }
-
-            #entrance .tagline {
-                font-size: 0.8rem;
-            }
-
-            .gallery-close {
-                top: 20px;
-                right: 20px;
-            }
-
-            /* 移动端BGM开关位置调整，避免和footer重叠 */
-            #bgm-toggle {
-                bottom: 80px;
-                right: 20px;
-            }
-
-            footer {
-                bottom: 20px;
-            }
+            body { overflow-y: auto; height: auto; padding-bottom: 10vh; }
+            #emotional-room { height: auto; display: flex; flex-direction: column; align-items: center; padding-top: 15vh; padding-bottom: 10vh; }
+            .main-title { position: relative; top: 0; left: 0; transform: none; text-align: center; margin-bottom: 5vh; }
+            .art-locator { position: relative !important; top: auto !important; left: auto !important; transform: none !important; width: 70vw !important; margin: 30px auto !important; display: block; }
+            .art-locator.is-selected { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 85vw !important; }
+            .series-title { position: absolute !important; bottom: -28px !important; top: auto !important; left: 50% !important; transform: translateX(-50%) !important; font-size: 0.8rem !important; text-shadow: none !important; }
+            #bgm-toggle { bottom: 80px; right: 20px; }
         }
     </style>
 </head>
@@ -363,9 +231,7 @@
 
     <div id="entrance">
         <div class="logo">YEONG</div>
-        <div class="tagline">
-            Nothing too loud here<br>
-        </div>
+        <div class="tagline">Nothing too loud here<br></div>
         <div class="prompt">click to enter</div>
     </div>
 
@@ -373,52 +239,40 @@
 
     <div id="emotional-room">
         <div class="art-locator" id="item-ecstasy" data-series="ecstasy">
-            <div class="anim-drift type-1">
-                <div class="anim-breathe type-1">
-                    <img class="anim-glow" src="Nothing but the Night.jpg" alt="Ecstasy">
-                    <div class="series-title">ecstasy that ends in nothing</div>
-                </div>
-            </div>
+            <div class="anim-drift type-1"><div class="anim-breathe type-1">
+                <img class="anim-glow" src="Nothing but the Night.jpg" alt="Ecstasy">
+                <div class="series-title">ecstasy that ends in nothing</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-greydays" data-series="greydays">
-            <div class="anim-drift type-2">
-                <div class="anim-breathe type-2">
-                    <img class="anim-glow" src="My body holds a river.jpg" alt="Grey Days">
-                    <div class="series-title">grey days</div>
-                </div>
-            </div>
+            <div class="anim-drift type-2"><div class="anim-breathe type-2">
+                <img class="anim-glow" src="My body holds a river.jpg" alt="Grey Days">
+                <div class="series-title">grey days</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-untitled" data-series="untitled">
-            <div class="anim-drift type-2">
-                <div class="anim-breathe type-1">
-                    <img class="anim-glow" src="Clean us like the rain in spring.png" alt="Untitled">
-                    <div class="series-title">untitled</div>
-                </div>
-            </div>
+            <div class="anim-drift type-2"><div class="anim-breathe type-1">
+                <img class="anim-glow" src="Clean us like the rain in spring.png" alt="Untitled">
+                <div class="series-title">untitled</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-elsewhere" data-series="elsewhere">
-            <div class="anim-drift type-1">
-                <div class="anim-breathe type-2">
-                    <img class="anim-glow" src="I saw the cracks in your halo and stayed.jpg" alt="Elsewhere">
-                    <div class="series-title">elsewhere</div>
-                </div>
-            </div>
+            <div class="anim-drift type-1"><div class="anim-breathe type-2">
+                <img class="anim-glow" src="I saw the cracks in your halo and stayed.jpg" alt="Elsewhere">
+                <div class="series-title">elsewhere</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-growth" data-series="growth">
-            <div class="anim-drift type-1">
-                <div class="anim-breathe type-1">
-                    <img class="anim-glow" src="The flowers don't know I'm dying here.jpg" alt="Growth">
-                    <div class="series-title">do i still got time to grow</div>
-                </div>
-            </div>
+            <div class="anim-drift type-1"><div class="anim-breathe type-1">
+                <img class="anim-glow" src="The flowers don't know I'm dying here.jpg" alt="Growth">
+                <div class="series-title">do i still got time to grow</div>
+            </div></div>
         </div>
         <div class="art-locator" id="item-dream" data-series="dream">
-            <div class="anim-drift type-2">
-                <div class="anim-breathe type-2">
-                    <img class="anim-glow" src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" alt="Dream">
-                    <div class="series-title">dream only</div>
-                </div>
-            </div>
+            <div class="anim-drift type-2"><div class="anim-breathe type-2">
+                <img class="anim-glow" src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" alt="Dream">
+                <div class="series-title">dream only</div>
+            </div></div>
         </div>
     </div>
 
@@ -441,16 +295,12 @@
         <a href="https://www.instagram.com/xzua.no?igsh=dTl2YzI2ZXNnbWpk" target="_blank" rel="noopener noreferrer">instagram</a>
     </footer>
 
-    <!-- BGM 音乐开关 -->
     <div id="bgm-toggle">music · off</div>
-
-    <!-- 背景音乐文件 -->
     <audio id="bgm" loop preload="auto">
         <source src="致青春.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        // ===== 核心元素获取 =====
         const entrance = document.getElementById('entrance');
         const room = document.getElementById('emotional-room');
         const mainTitle = document.getElementById('main-title');
@@ -459,41 +309,44 @@
         const bgm = document.getElementById('bgm');
         let isBgmPlaying = false;
 
-        // ===== BGM 背景音乐控制 =====
-        bgm.volume = 0.3;
+        // ===== 3. 微视差效果与定制光标脚本 =====
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const cursor = document.createElement('div');
+            cursor.classList.add('custom-cursor');
+            document.body.appendChild(cursor);
 
-        entrance.addEventListener('click', function initBgm() {
-            bgm.play().then(() => {
-                isBgmPlaying = true;
-                bgmToggle.innerText = 'music · on';
-            }).catch(e => {
-                console.log('BGM自动播放被浏览器限制，点击页面任意处可播放', e);
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+
+                // 视差：鼠标移动时，房间发生反向轻微位移
+                if (!room.classList.contains('is-locked')) {
+                    const moveX = (window.innerWidth / 2 - e.clientX) / 45;
+                    const moveY = (window.innerHeight / 2 - e.clientY) / 45;
+                    room.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                } else {
+                    room.style.transform = `translate(0, 0)`;
+                }
             });
-        }, { once: true });
 
-        document.addEventListener('click', function fallbackBgm() {
-            if (!isBgmPlaying) {
-                bgm.play().then(() => {
-                    isBgmPlaying = true;
-                    bgmToggle.innerText = 'music · on';
-                }).catch(e => console.log('BGM播放失败：', e));
-            }
-        }, { once: true });
+            // 悬停交互
+            const updateHover = () => {
+                const interactables = document.querySelectorAll('.art-locator, #bgm-toggle, .gallery-close, #entrance, footer a, .gallery-item');
+                interactables.forEach(el => {
+                    el.onmouseenter = () => cursor.classList.add('is-hover');
+                    el.onmouseleave = () => cursor.classList.remove('is-hover');
+                });
+            };
+            updateHover();
+            // 每次打开画廊重新绑定
+            const observer = new MutationObserver(updateHover);
+            observer.observe(document.getElementById('gallery-content'), { childList: true });
+        }
 
-        bgmToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (isBgmPlaying) {
-                bgm.pause();
-                bgmToggle.innerText = 'music · off';
-            } else {
-                bgm.play();
-                bgmToggle.innerText = 'music · on';
-            }
-            isBgmPlaying = !isBgmPlaying;
-        });
-
-        // ===== 入口页进入逻辑 =====
+        // BGM 控制
+        bgm.volume = 0.3;
         entrance.addEventListener('click', () => {
+            bgm.play().then(() => { isBgmPlaying = true; bgmToggle.innerText = 'music · on'; });
             entrance.classList.add('hidden');
             setTimeout(() => {
                 room.style.opacity = '1';
@@ -501,175 +354,96 @@
                 footer.style.opacity = '1';
                 bgmToggle.style.opacity = '1';
             }, 200);
+        }, { once: true });
+
+        bgmToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isBgmPlaying) { bgm.pause(); bgmToggle.innerText = 'music · off'; } 
+            else { bgm.play(); bgmToggle.innerText = 'music · on'; }
+            isBgmPlaying = !isBgmPlaying;
         });
 
+        // 核心画廊逻辑
         const seriesData = {
-            'untitled': [
-                { src: "Clean us like the rain in spring.png", title: "Clean us like the rain in spring", year: '2025', medium: 'Oil on Canvas' },
-                { src: "Hiding in a disguise of an ever giving flower.png", title: "Hiding in a disguise of an ever giving flower", year: '2025', medium: 'Oil on Canvas' }
-            ],
-            'ecstasy': [
-                { src: "Nothing but the Night.jpg", title: "Nothing but the Night", year: '2024', medium: 'Lithograph on paper' },
-                { src: "The Running and Nothing.jpg", title: "The Running and Nothing Else", year: '2024', medium: 'Lithograph on paper' },
-                { src: "No feelings Just lies Everywhere.jpg", title: "No feelings Just lies Everywhere", year: '2024', medium: 'Lithograph on paper' },
-                { src: "They take my body Steal my thoughts. Call it justice Call me guilty.jpeg", title: "They take my body Steal my thoughts Call it justice Call me guilty", year: '2024', medium: 'Lithograph on paper' },
-                { src: "Mystery Remains.jpg", title: "Mystery Remains", year: '2024', medium: 'Lithograph on paper' },
-                { src: "Give me everything.jpg", title: "Give me everything", year: '2019', medium: 'Lithograph on paper' }
-            ],
-            'greydays': [
-                { src: "That's where I wanna be.jpg", title: "That's where I wanna be", year: '2018', medium: 'Oil on Canvas' },
-                { src: "s There Someone Else.jpg", title: "Is There Someone Else?", year: '2022', medium: 'Oil on linen' },
-                { src: "Beyond the Bars the Water Sings.jpg", title: "Beyond the Bars the Water Sings", year: '2022', medium: 'Oil on canvas' },
-                { src: "My body holds a river.jpg", title: "My body holds a river", year: '2022', medium: 'Oil on paper' },
-                { src: "For You a Thousand Times Over.jpg", title: "For You, a Thousand Times Over", year: '2021', medium: 'Mixed Media on Paper' }
-            ],
-            'elsewhere': [
-                { src: "Breathe Air without weight.png", title: "Breathe Air without weight", year: '2025', medium: 'Oil on Canvas' },
-                { src: "I saw the cracks in your halo and stayed.jpg", title: "I saw the cracks in your halo and stayed", year: '2025', medium: 'Oil on Canvas' },
-                { src: "我怀疑人们的生活 有所掩饰.png", title: "我怀疑人们的生活 有所掩饰", year: '2025', medium: 'Oil on Canvas' },
-                { src: "They don't want me They want my performance.jpg", title: "They don't want me They want my performance", year: '2025', medium: 'Oil on Canvas' },
-                { src: "Soft Under Dim Light.png", title: "Soft Under Dim Light", year: '2025', medium: 'Oil on Canvas' },
-                { src: "Almost there Almost gone.jpg", title: "Almost there Almost gone", year: '2025', medium: 'Oil on Canvas' }
-            ],
-            'growth': [
-                { src: "Growth Archive.jpg", title: "Growth Archive", year: '2019', medium: 'Mixed Media on Paper' },
-                { src: "00 00.jpg", title: "00:00", year: '2019', medium: 'Oil on Canvas' },
-                { src: "Stuck in the ticking.jpg", title: "Stuck in the ticking", year: '2019', medium: 'Watercolor on Paper' },
-                { src: "This can't be right.jpg", title: "This can't be right", year: '2019', medium: 'Watercolor on Paper' },
-                { src: "No One  Not One Gone.jpg", title: "No One Not One Gone?", year: '2019', medium: 'Mixed Media on Paper' },
-                { src: "It gets better' but when.jpg", title: "It gets better' but when?", year: '2019', medium: 'Mixed Media on Paper' },
-                { src: "Growth Archive 2.jpg", title: "Growth Archive 2", year: '2019', medium: 'Mixed Media on Paper' },
-                { src: "hold up hold up.jpg", title: "hold up hold up", year: '2019', medium: 'Watercolor on paper' },
-                { src: "The flowers don't know I'm dying here.jpg", title: "The flowers don't know I'm dying here", year: '2019', medium: 'Watercolor and colored pencil on paper' },
-                { src: "No Child Left Behind.jpg", title: "No Child Left Behind", year: '2019', medium: 'Watercolor on paper' },
-                { src: "No one knows.jpg", title: "No one knows", year: '2019', medium: 'Acrylic on canvas' }
-            ],
-            'dream': [
-                { src: "mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png", title: "In this world right now I only have you", year: '2018', medium: 'Procreate on iPad' }
-            ]
+            'untitled': [{ src: "Clean us like the rain in spring.png", title: "Clean us like the rain in spring", year: '2025', medium: 'Oil on Canvas' }, { src: "Hiding in a disguise of an ever giving flower.png", title: "Hiding in a disguise of an ever giving flower", year: '2025', medium: 'Oil on Canvas' }],
+            'ecstasy': [{ src: "Nothing but the Night.jpg", title: "Nothing but the Night", year: '2024', medium: 'Lithograph on paper' }, { src: "The Running and Nothing.jpg", title: "The Running and Nothing Else", year: '2024', medium: 'Lithograph on paper' }, { src: "No feelings Just lies Everywhere.jpg", title: "No feelings Just lies Everywhere", year: '2024', medium: 'Lithograph on paper' }, { src: "They take my body Steal my thoughts. Call it justice Call me guilty.jpeg", title: "They take my body Steal my thoughts Call it justice Call me guilty", year: '2024', medium: 'Lithograph on paper' }, { src: "Mystery Remains.jpg", title: "Mystery Remains", year: '2024', medium: 'Lithograph on paper' }, { src: "Give me everything.jpg", title: "Give me everything", year: '2019', medium: 'Lithograph on paper' }],
+            'greydays': [{ src: "That's where I wanna be.jpg", title: "That's where I wanna be", year: '2018', medium: 'Oil on Canvas' }, { src: "s There Someone Else.jpg", title: "Is There Someone Else?", year: '2022', medium: 'Oil on linen' }, { src: "Beyond the Bars the Water Sings.jpg", title: "Beyond the Bars the Water Sings", year: '2022', medium: 'Oil on canvas' }, { src: "My body holds a river.jpg", title: "My body holds a river", year: '2022', medium: 'Oil on paper' }, { src: "For You a Thousand Times Over.jpg", title: "For You, a Thousand Times Over", year: '2021', medium: 'Mixed Media on Paper' }],
+            'elsewhere': [{ src: "Breathe Air without weight.png", title: "Breathe Air without weight", year: '2025', medium: 'Oil on Canvas' }, { src: "I saw the cracks in your halo and stayed.jpg", title: "I saw the cracks in your halo and stayed", year: '2025', medium: 'Oil on Canvas' }, { src: "我怀疑人们的生活 有所掩饰.png", title: "我怀疑人们的生活 有所掩饰", year: '2025', medium: 'Oil on Canvas' }, { src: "They don't want me They want my performance.jpg", title: "They don't want me They want my performance", year: '2025', medium: 'Oil on Canvas' }, { src: "Soft Under Dim Light.png", title: "Soft Under Dim Light", year: '2025', medium: 'Oil on Canvas' }, { src: "Almost there Almost gone.jpg", title: "Almost there Almost gone", year: '2025', medium: 'Oil on Canvas' }],
+            'growth': [{ src: "Growth Archive.jpg", title: "Growth Archive", year: '2019', medium: 'Mixed Media on Paper' }, { src: "00 00.jpg", title: "00:00", year: '2019', medium: 'Oil on Canvas' }, { src: "Stuck in the ticking.jpg", title: "Stuck in the ticking", year: '2019', medium: 'Watercolor on Paper' }, { src: "This can't be right.jpg", title: "This can't be right", year: '2019', medium: 'Watercolor on Paper' }, { src: "No One  Not One Gone.jpg", title: "No One Not One Gone?", year: '2019', medium: 'Mixed Media on Paper' }, { src: "It gets better' but when.jpg", title: "It gets better' but when?", year: '2019', medium: 'Mixed Media on Paper' }, { src: "Growth Archive 2.jpg", title: "Growth Archive 2", year: '2019', medium: 'Mixed Media on Paper' }, { src: "hold up hold up.jpg", title: "hold up hold up", year: '2019', medium: 'Watercolor on paper' }, { src: "The flowers don't know I'm dying here.jpg", title: "The flowers don't know I'm dying here", year: '2019', medium: 'Watercolor and colored pencil on paper' }, { src: "No Child Left Behind.jpg", title: "No Child Left Behind", year: '2019', medium: 'Watercolor on paper' }, { src: "No one knows.jpg", title: "No one knows", year: '2019', medium: 'Acrylic on canvas' }],
+            'dream': [{ src: "mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png", title: "In this world right now I only have you", year: '2018', medium: 'Procreate on iPad' }]
         };
 
         const artItems = document.querySelectorAll('.art-locator');
         const gallery = document.getElementById('series-gallery');
         const galleryContent = document.getElementById('gallery-content');
-
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lb-img');
         const lbInfo = document.getElementById('lb-info');
-        const lbTitle = document.getElementById('lb-title');
-        const lbMeta = document.getElementById('lb-meta');
-        let lightboxTimeout;
 
         artItems.forEach(item => {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', () => {
                 if (room.classList.contains('is-locked')) return;
                 room.classList.add('is-locked');
-                mainTitle.style.opacity = '0';
-                footer.style.opacity = '0';
-                bgmToggle.style.opacity = '0';
-
+                mainTitle.style.opacity = '0'; footer.style.opacity = '0'; bgmToggle.style.opacity = '0';
                 artItems.forEach(other => { if (other !== item) other.classList.add('is-faded'); });
-
                 item.classList.add('is-selected');
-
                 if (window.innerWidth > 768) {
-                    const scaleValue = 1.2;
-                    item.style.top = '50vh';
-                    item.style.left = '50vw';
-                    item.style.transform = `translate(-50%, -50%) scale(${scaleValue})`;
+                    item.style.top = '50vh'; item.style.left = '50vw';
+                    item.style.transform = `translate(-50%, -50%) scale(1.2)`;
                 }
-
-                setTimeout(() => {
-                    item.querySelector('.series-title').classList.add('show');
-                }, 500);
-                setTimeout(() => { openGallery(item.dataset.series); }, 1500);
+                setTimeout(() => item.querySelector('.series-title').classList.add('show'), 500);
+                setTimeout(() => openGallery(item.dataset.series), 1500);
             });
         });
 
         function openGallery(seriesKey) {
             galleryContent.innerHTML = '';
-            const artworks = seriesData[seriesKey] || [];
-
-            artworks.forEach(art => {
+            (seriesData[seriesKey] || []).forEach(art => {
                 const wrapper = document.createElement('div');
-                wrapper.classList.add('gallery-item');
-
+                wrapper.className = 'gallery-item';
                 const img = document.createElement('img');
                 img.src = art.src;
-                img.alt = art.title;
-
-                wrapper.addEventListener('click', () => openLightbox(art));
-
+                wrapper.onclick = () => openLightbox(art);
                 wrapper.appendChild(img);
                 galleryContent.appendChild(wrapper);
             });
-
             gallery.classList.add('active');
-            // ✅ 修复：移动端保持可滚动，桌面端才锁定body
-            if (window.innerWidth > 768) {
-                document.body.style.overflow = 'auto';
-            }
-
-            const observer = new IntersectionObserver((entries) => {
+            if (window.innerWidth > 768) document.body.style.overflow = 'auto';
+            const observer = new IntersectionObserver(entries => {
                 entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('reveal'); });
             }, { threshold: 0.1 });
-
-            setTimeout(() => {
-                galleryContent.querySelectorAll('.gallery-item').forEach(el => observer.observe(el));
-            }, 100);
+            setTimeout(() => galleryContent.querySelectorAll('.gallery-item').forEach(el => observer.observe(el)), 100);
         }
 
         function openLightbox(art) {
             lbImg.src = art.src;
-            lbTitle.innerText = art.title;
-            lbMeta.innerText = `${art.year} — ${art.medium}`;
-
+            document.getElementById('lb-title').innerText = art.title;
+            document.getElementById('lb-meta').innerText = `${art.year} — ${art.medium}`;
             lightbox.classList.add('active');
-
-            clearTimeout(lightboxTimeout);
-            lightboxTimeout = setTimeout(() => {
-                lbInfo.classList.add('revealed');
-            }, 600);
+            setTimeout(() => lbInfo.classList.add('revealed'), 600);
         }
 
         function closeLightbox() {
-            lightbox.classList.remove('active');
-            lbInfo.classList.remove('revealed');
-            clearTimeout(lightboxTimeout);
-            setTimeout(() => { lbImg.src = ''; }, 400);
+            lightbox.classList.remove('active'); lbInfo.classList.remove('revealed');
+            setTimeout(() => lbImg.src = '', 400);
         }
 
         function closeGallery() {
             gallery.classList.remove('active');
-            // ✅ 核心修复：移动端退出gallery后不锁定overflow，保持可滚动
-            if (window.innerWidth > 768) {
-                document.body.style.overflow = 'hidden';
-            }
+            if (window.innerWidth > 768) document.body.style.overflow = 'hidden';
             setTimeout(() => {
                 room.classList.remove('is-locked');
-                mainTitle.style.opacity = '1';
-                footer.style.opacity = '1';
-                bgmToggle.style.opacity = '1';
+                mainTitle.style.opacity = '1'; footer.style.opacity = '1'; bgmToggle.style.opacity = '1';
                 artItems.forEach(item => {
                     item.classList.remove('is-faded', 'is-selected');
-                    if (window.innerWidth > 768) {
-                        item.style.top = '';
-                        item.style.left = '';
-                        item.style.transform = '';
-                    }
+                    item.style.top = ''; item.style.left = ''; item.style.transform = '';
                     const title = item.querySelector('.series-title');
                     if (title) title.classList.remove('show');
                 });
             }, 1000);
         }
 
-        lightbox.addEventListener('click', closeLightbox);
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape") {
-                if (lightbox.classList.contains('active')) closeLightbox();
-                else if (gallery.classList.contains('active')) closeGallery();
-            }
-        });
+        lightbox.onclick = closeLightbox;
     </script>
 </body>
 </html>
