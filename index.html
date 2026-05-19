@@ -3,447 +3,767 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YEONG | Emotional Installation</title>
+    <title>YEONG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;1,200;1,300;1,400&family=DM+Mono:wght@300&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-color: #000000;
-            --primary-text: #ffffff;
-            --secondary-text: #777777;
-            --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            --bg: #080806;
+            --ink: #f0ede6;
+            --dim: #444440;
+            --faint: #222220;
+            --accent: rgba(240,237,230,0.06);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ===== 1. 胶片噪点效果 (Film Grain) - 增加情绪质感 ===== */
-        body::before {
-            content: "";
-            position: fixed;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
-            opacity: 0.04;
-            pointer-events: none;
-            z-index: 9998;
-            animation: grain 8s steps(10) infinite;
-        }
-
-        @keyframes grain {
-            0%, 100% { transform: translate(0, 0); }
-            10% { transform: translate(-5%, -10%); }
-            30% { transform: translate(7%, -25%); }
-            50% { transform: translate(-15%, 10%); }
-            70% { transform: translate(0%, 15%); }
-            90% { transform: translate(-10%, 10%); }
-        }
-
-        /* ===== 2. 定制光标 (Custom Cursor) - 仅在电脑端生效 ===== */
-        @media (pointer: fine) {
-            body, #entrance, .art-locator, .gallery-close, #bgm-toggle, footer a { 
-                cursor: none !important; 
-            }
-            
-            .custom-cursor {
-                position: fixed;
-                top: 0; left: 0;
-                width: 8px; height: 8px;
-                background-color: var(--secondary-text);
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                z-index: 10000;
-                transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border 0.3s ease;
-                mix-blend-mode: difference;
-            }
-            
-            .custom-cursor.is-hover {
-                width: 45px; height: 45px;
-                background-color: transparent;
-                border: 1px solid var(--secondary-text);
-            }
-        }
-
-        /* ===== 原始样式部分 ===== */
-        #bgm-toggle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 100;
-            color: var(--secondary-text);
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            opacity: 0;
-            transition: opacity 1s ease 0.5s;
-        }
-
-        #bgm-toggle:hover { color: #fff; }
-
-        #entrance {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-color: var(--bg-color);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.6s ease-out, visibility 0.6s;
-        }
-
-        #entrance.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-        #entrance .logo {
-            font-size: 1.4rem; font-weight: 400; margin-bottom: 0.8rem;
-            letter-spacing: 0.35em; color: var(--primary-text);
-        }
-
-        #entrance .tagline {
-            font-size: 0.85rem; color: var(--secondary-text); text-align: center;
-            margin-bottom: 3rem; line-height: 1.8; letter-spacing: 0.05em;
-        }
-
-        #entrance .prompt {
-            position: absolute; bottom: 10%; font-size: 0.75rem;
-            color: var(--secondary-text); opacity: 0.6; letter-spacing: 0.1em;
-            animation: fadePulse 2s infinite;
-        }
-
-        @keyframes fadePulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-        }
-
-        footer {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 99; opacity: 0; transition: opacity 1s ease 0.5s;
-        }
-
-        footer a { color: var(--secondary-text); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.1em; transition: color 0.3s ease; }
-        footer a:hover { color: #fff; }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--primary-text);
-            font-family: var(--font-main);
+        html, body {
+            width: 100%; height: 100%;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Cormorant Garamond', Georgia, serif;
             overflow: hidden;
-            width: 100vw; height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
-        .main-title {
-            position: absolute; top: 8vh; left: 50%; transform: translateX(-50%);
-            font-size: 1rem; letter-spacing: 0.35em; font-weight: 400;
-            color: var(--primary-text); z-index: 10; opacity: 0;
-            transition: opacity 1s ease 0.3s;
+        /* ── CUSTOM CURSOR ── */
+        @media (pointer: fine) {
+            *, body { cursor: none !important; }
+            .cursor-dot {
+                position: fixed; width: 5px; height: 5px;
+                background: var(--ink); border-radius: 50%;
+                pointer-events: none; z-index: 10000;
+                transform: translate(-50%,-50%);
+                transition: opacity .3s;
+                mix-blend-mode: difference;
+            }
+            .cursor-ring {
+                position: fixed; width: 32px; height: 32px;
+                border: 1px solid rgba(240,237,230,.25); border-radius: 50%;
+                pointer-events: none; z-index: 9999;
+                transform: translate(-50%,-50%);
+                transition: width .4s ease, height .4s ease, border-color .4s ease;
+                mix-blend-mode: difference;
+            }
+            .cursor-ring.hover {
+                width: 56px; height: 56px;
+                border-color: rgba(240,237,230,.5);
+            }
         }
 
-        /* Room 容器，用于承载视差效果 */
-        #emotional-room {
-            position: relative;
-            width: 100vw; height: 100vh;
-            opacity: 0;
-            transition: opacity 1s ease 0.2s;
-            transform-origin: center center;
+        /* ── ENTRANCE ── */
+        #entrance {
+            position: fixed; inset: 0; z-index: 9000;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: var(--bg);
+            transition: opacity 1s ease, visibility 1s;
+        }
+        #entrance.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .ent-eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px; letter-spacing: .35em;
+            color: var(--dim); text-transform: uppercase;
+            margin-bottom: 28px;
+            opacity: 0; animation: fadeUp .8s ease .2s forwards;
+        }
+        .ent-name {
+            font-size: clamp(64px, 14vw, 180px);
+            font-weight: 200; font-style: italic;
+            line-height: .85; letter-spacing: -.03em;
+            color: var(--ink);
+            opacity: 0; animation: fadeUp 1.2s cubic-bezier(.16,1,.3,1) .4s forwards;
+        }
+        .ent-tagline {
+            margin-top: 28px;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px; letter-spacing: .25em;
+            color: var(--dim); text-transform: lowercase;
+            opacity: 0; animation: fadeUp .8s ease .9s forwards;
+        }
+        .ent-prompt {
+            position: absolute; bottom: 10%;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .2em;
+            color: var(--dim);
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:.2} 50%{opacity:.7} }
+        @keyframes fadeUp { to { opacity:1; transform:translateY(0) } from { opacity:0; transform:translateY(14px) } }
+
+        /* ── TOP BAR ── */
+        #topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 28px 44px;
+            opacity: 0; transition: opacity 1s ease .3s;
+        }
+        #topbar.visible { opacity: 1; }
+        .tb-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 13px; font-style: italic; font-weight: 300;
+            letter-spacing: .12em; color: rgba(240,237,230,.5);
+        }
+        .tb-right {
+            display: flex; align-items: center; gap: 28px;
+        }
+        #bgm-toggle {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .18em;
+            color: var(--dim); text-transform: lowercase;
+            background: none; border: none;
+            transition: color .3s;
+        }
+        #bgm-toggle:hover { color: var(--ink); }
+
+        /* ── ROOM ── */
+        #room {
+            position: fixed; inset: 0; z-index: 100;
+            opacity: 0; transition: opacity 1.2s ease .2s, transform 0.1s ease-out;
+        }
+        #room.visible { opacity: 1; }
+
+        #room::before {
+            content: '';
+            position: absolute; inset: 0; z-index: 2;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(8,8,6,.7) 100%);
+            pointer-events: none;
         }
 
-        .art-locator {
+        #room::after {
+            content: '';
+            position: absolute; inset: 0; z-index: 1;
+            background:
+                linear-gradient(to right, transparent calc(50% - .5px), rgba(240,237,230,.03) calc(50% - .5px), rgba(240,237,230,.03) calc(50% + .5px), transparent calc(50% + .5px)),
+                linear-gradient(to bottom, transparent calc(50% - .5px), rgba(240,237,230,.03) calc(50% - .5px), rgba(240,237,230,.03) calc(50% + .5px), transparent calc(50% + .5px));
+            pointer-events: none;
+        }
+
+        /* ── ART PIECES ── */
+        .piece {
             position: absolute;
             transform: translate(-50%, -50%);
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            opacity: 0.85;
+            z-index: 10;
         }
 
-        #item-ecstasy   { top: 18vh; left: 50vw; width: 14vw; z-index: 2; }
-        #item-greydays  { top: 38vh; left: 22vw; width: 11vw; z-index: 1; }
-        #item-elsewhere { top: 38vh; left: 78vw; width: 14vw; z-index: 2; }
-        #item-untitled  { top: 52vh; left: 50vw; width: 22vw; z-index: 3; }
-        #item-growth    { top: 78vh; left: 28vw; width: 11vw; z-index: 1; }
-        #item-dream     { top: 78vh; left: 72vw; width: 10vw; z-index: 1; }
-
-        .art-locator img { width: 100%; display: block; filter: grayscale(20%); transition: filter 0.4s ease; }
-
-        .series-title {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 1.2rem; letter-spacing: 0.15em; color: #fff; text-transform: lowercase;
-            opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8); white-space: nowrap; z-index: 10;
+        .piece.returning {
+            transition: top 1s cubic-bezier(.25,1,.5,1), left 1s cubic-bezier(.25,1,.5,1), transform 1s cubic-bezier(.25,1,.5,1), opacity 0.8s ease;
         }
 
-        /* 动画 */
-        @keyframes drift1 { 0% {transform: translate(0,0);} 50% {transform: translate(-2%,2%);} 100% {transform: translate(0,0);} }
-        @keyframes drift2 { 0% {transform: translate(0,0);} 50% {transform: translate(2%,-2%);} 100% {transform: translate(0,0);} }
-        .anim-drift.type-1 { animation: drift1 14s ease-in-out infinite; }
-        .anim-drift.type-2 { animation: drift2 18s ease-in-out infinite; }
-        @keyframes breathe { 0% {transform: scale(1);} 50% {transform: scale(1.02);} 100% {transform: scale(1);} }
-        .anim-breathe.type-1 { animation: breathe 10s ease-in-out infinite; }
-        .anim-breathe.type-2 { animation: breathe 12s ease-in-out infinite; }
-        @keyframes glow { 0% {opacity: 0.85;} 50% {opacity: 1;} 100% {opacity: 0.85;} }
-        .anim-glow { animation: glow 9s ease-in-out infinite; }
-
-        #emotional-room:not(.is-locked):hover .art-locator:not(:hover) { opacity: 0.35; }
-        #emotional-room:not(.is-locked) .art-locator:hover { opacity: 1; z-index: 10 !important; }
-        #emotional-room:not(.is-locked) .art-locator:hover img { filter: grayscale(0%); }
-
-        .art-locator.is-faded { opacity: 0 !important; pointer-events: none; }
-        .art-locator.is-selected { opacity: 1 !important; z-index: 100 !important; }
-        .art-locator.is-selected .series-title.show { opacity: 1; }
-
-        #series-gallery {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; overflow-y: auto; overflow-x: hidden; z-index: 200;
-            opacity: 0; visibility: hidden; transition: opacity 1.5s ease, visibility 1.5s; padding: 20vh 10vw;
+        .piece-inner {
+            position: relative;
+            box-shadow:
+                0 0 0 1px rgba(240,237,230,.04),
+                0 8px 40px rgba(0,0,0,.6),
+                0 2px 8px rgba(0,0,0,.4);
+            transition: box-shadow .6s ease, transform .6s ease;
+            min-height: 50px; /* 防止图片碎掉时容器完全塌陷 */
         }
-        #series-gallery.active { opacity: 1; visibility: visible; }
-        .gallery-close { position: fixed; top: 40px; right: 50px; color: var(--secondary-text); font-size: 0.8rem; letter-spacing: 0.1em; z-index: 210; }
-        .gallery-content { display: flex; flex-direction: column; align-items: center; gap: 15vh; max-width: 900px; margin: 0 auto; }
-        .gallery-item { width: 100%; opacity: 0; transform: translateY(30px); transition: all 1s ease; }
-        .gallery-item.reveal { opacity: 1; transform: translateY(0); }
-        .gallery-item img { width: 100%; display: block; transition: transform 0.4s ease; }
 
-        #lightbox {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.95); z-index: 300; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s;
+        .piece:hover .piece-inner {
+            box-shadow:
+                0 0 0 1px rgba(240,237,230,.1),
+                0 16px 64px rgba(0,0,0,.7),
+                0 4px 16px rgba(0,0,0,.5);
+            transform: scale(1.015);
         }
-        #lightbox.active { opacity: 1; visibility: visible; }
-        .lb-content { max-width: 85vw; max-height: 85vh; text-align: center; }
-        .lb-img { max-width: 100%; max-height: 75vh; object-fit: contain; }
-        .lb-info { margin-top: 30px; opacity: 0; transition: opacity 1s ease 0.6s; }
-        .lb-info.revealed { opacity: 1; }
-        .lb-title { font-size: 1rem; font-style: italic; margin-bottom: 6px; color: var(--primary-text); }
-        .lb-meta { font-size: 0.8rem; color: var(--secondary-text); letter-spacing: 0.1em; }
 
+        .piece img {
+            width: 100%; display: block;
+            filter: brightness(.88) saturate(.9);
+            transition: filter .6s ease;
+        }
+        /* 防碎图丑陋边框处理 */
+        .piece img:not([src]), .work-item img:not([src]) { opacity: 0; } 
+        
+        .piece:hover img {
+            filter: brightness(1) saturate(1);
+        }
+
+        .piece-label {
+            position: absolute;
+            bottom: -26px; left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .22em;
+            color: rgba(240,237,230,.35);
+            text-transform: lowercase;
+            opacity: 0;
+            transition: opacity .4s ease;
+            pointer-events: none;
+        }
+        .piece:hover .piece-label { opacity: 1; }
+
+        #p-ecstasy   { top: 17vh; left: 50vw; width: clamp(100px, 13vw, 200px); }
+        #p-greydays  { top: 42vh; left: 20vw; width: clamp(90px, 11vw, 170px); }
+        #p-elsewhere { top: 38vh; left: 80vw; width: clamp(100px, 13vw, 200px); }
+        #p-untitled  { top: 55vh; left: 50vw; width: clamp(130px, 20vw, 280px); }
+        #p-growth    { top: 78vh; left: 28vw; width: clamp(80px, 10vw, 150px); }
+        #p-dream     { top: 76vh; left: 74vw; width: clamp(80px, 9vw,  140px); }
+
+        /* drift animations */
+        @keyframes d1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-3px, 4px)} }
+        @keyframes d2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(4px,-3px)} }
+        @keyframes d3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-2px,-4px)} 66%{transform:translate(3px,2px)} }
+        @keyframes breathe { 0%,100%{opacity:.82} 50%{opacity:1} }
+
+        .drift-a { animation: d1 16s ease-in-out infinite; }
+        .drift-b { animation: d2 20s ease-in-out infinite; }
+        .drift-c { animation: d3 13s ease-in-out infinite; }
+        .breathe { animation: breathe 10s ease-in-out infinite; }
+
+        #room:not(.locked):hover .piece:not(:hover) { opacity: .28; }
+        .piece.faded { opacity: 0 !important; pointer-events: none !important; transition: opacity .8s ease !important; }
+        .piece.selected { opacity: 1 !important; z-index: 200 !important; }
+
+        /* ── GALLERY PANEL ── */
+        #gallery {
+            position: fixed; inset: 0; z-index: 600;
+            background: var(--bg);
+            overflow-y: auto; overflow-x: hidden;
+            opacity: 0; visibility: hidden;
+            transition: opacity 1.2s ease, visibility 1.2s;
+            padding: 0;
+        }
+        #gallery.open { opacity: 1; visibility: visible; }
+
+        .gallery-header {
+            position: sticky; top: 0; z-index: 10;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            padding: 40px 56px 32px;
+            border-bottom: 1px solid rgba(240,237,230,.06);
+            background: rgba(8,8,6,.9);
+            backdrop-filter: blur(16px);
+        }
+        .gallery-series-name {
+            font-size: clamp(24px, 4vw, 52px);
+            font-weight: 200; font-style: italic;
+            letter-spacing: -.01em; line-height: 1;
+            color: var(--ink);
+        }
+        .gallery-back {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .2em;
+            color: var(--dim); text-transform: lowercase;
+            background: none; border: none;
+            transition: color .3s; padding-bottom: 4px;
+        }
+        .gallery-back:hover { color: var(--ink); }
+
+        .gallery-works {
+            display: flex; flex-direction: column;
+            align-items: center;
+            gap: 20vh;
+            padding: 14vh 10vw 20vh;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .work-item {
+            width: 100%;
+            opacity: 0; transform: translateY(32px);
+            transition: opacity 1s ease, transform 1s cubic-bezier(.16,1,.3,1);
+        }
+        .work-item.in { opacity: 1; transform: none; }
+
+        .work-item img {
+            width: 100%; display: block;
+            box-shadow: 0 20px 80px rgba(0,0,0,.5);
+            filter: brightness(.9);
+            transition: filter .5s ease, transform .5s ease;
+        }
+        .work-item:hover img {
+            filter: brightness(1);
+            transform: scale(1.005);
+        }
+
+        .work-info {
+            margin-top: 20px; padding: 0 2px;
+            display: flex; justify-content: space-between; align-items: baseline;
+            opacity: 0; transition: opacity .8s ease .3s;
+        }
+        .work-item.in .work-info { opacity: 1; }
+
+        .work-title {
+            font-size: clamp(14px, 1.6vw, 18px);
+            font-style: italic; font-weight: 300;
+            color: rgba(240,237,230,.7); line-height: 1.4;
+            max-width: 70%;
+        }
+        .work-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .12em;
+            color: var(--dim); text-align: right;
+            line-height: 1.8;
+        }
+
+        /* ── LIGHTBOX ── */
+        #lb {
+            position: fixed; inset: 0; z-index: 800;
+            background: rgba(4,4,3,.98);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity .4s ease, visibility .4s;
+        }
+        #lb.open { opacity: 1; visibility: visible; }
+
+        .lb-img-wrap {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            padding: 72px 56px 56px;
+        }
+        #lb-img {
+            max-width: 100%; max-height: 100%;
+            object-fit: contain; display: block;
+            opacity: 0; transition: opacity .4s ease;
+            box-shadow: 0 32px 120px rgba(0,0,0,.6);
+        }
+        #lb-img.shown { opacity: 1; }
+
+        .lb-caption {
+            position: absolute; bottom: 36px; left: 56px;
+            opacity: 0; transition: opacity .4s ease;
+        }
+        .lb-caption.shown { opacity: 1; }
+        .lb-caption-title {
+            font-size: 15px; font-style: italic; font-weight: 300;
+            color: rgba(240,237,230,.7); margin-bottom: 6px;
+            max-width: 480px; line-height: 1.5;
+        }
+        .lb-caption-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .12em;
+            color: rgba(240,237,230,.25);
+        }
+
+        #lb-close {
+            position: absolute; top: 28px; right: 44px;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .2em;
+            color: rgba(240,237,230,.2);
+            background: none; border: none;
+            transition: color .3s;
+        }
+        #lb-close:hover { color: rgba(240,237,230,.6); }
+
+        .lb-nav {
+            position: absolute; bottom: 36px; right: 44px;
+            display: flex; gap: 16px;
+        }
+        .lb-nav button {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .15em;
+            color: rgba(240,237,230,.2);
+            background: none; border: none;
+            padding: 6px; transition: color .3s;
+        }
+        .lb-nav button:hover { color: rgba(240,237,230,.6); }
+
+        /* ── FOOTER ── */
+        #footer {
+            position: fixed; bottom: 28px; left: 50%;
+            transform: translateX(-50%); z-index: 400;
+            opacity: 0; transition: opacity 1s ease .4s;
+        }
+        #footer.visible { opacity: 1; }
+        #footer a {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px; letter-spacing: .2em;
+            color: var(--dim); text-decoration: none; text-transform: lowercase;
+            transition: color .3s;
+        }
+        #footer a:hover { color: var(--ink); }
+
+        /* ── MOBILE ── */
         @media (max-width: 768px) {
-            body { overflow-y: auto; height: auto; padding-bottom: 10vh; }
-            #emotional-room { height: auto; display: flex; flex-direction: column; align-items: center; padding-top: 15vh; padding-bottom: 10vh; }
-            .main-title { position: relative; top: 0; left: 0; transform: none; text-align: center; margin-bottom: 5vh; }
-            .art-locator { position: relative !important; top: auto !important; left: auto !important; transform: none !important; width: 70vw !important; margin: 30px auto !important; display: block; }
-            .art-locator.is-selected { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 85vw !important; }
-            .series-title { position: absolute !important; bottom: -28px !important; top: auto !important; left: 50% !important; transform: translateX(-50%) !important; font-size: 0.8rem !important; text-shadow: none !important; }
-            #bgm-toggle { bottom: 80px; right: 20px; }
+            #room { overflow-y: auto; height: auto; overflow: visible; }
+            #p-ecstasy, #p-greydays, #p-elsewhere, #p-untitled, #p-growth, #p-dream {
+                position: relative !important; top: auto !important; left: auto !important;
+                transform: none !important; width: 65vw !important;
+                margin: 40px auto !important; display: block;
+            }
+            #room::after { display: none; }
+            .gallery-header { padding: 28px 24px 20px; }
+            .gallery-works { padding: 10vh 24px 16vh; gap: 12vh; }
+            .lb-img-wrap { padding: 56px 20px 80px; }
+            .lb-caption { left: 20px; }
+            .lb-nav { right: 20px; }
+            #topbar { padding: 20px 24px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="entrance">
-        <div class="logo">YEONG</div>
-        <div class="tagline">Nothing too loud here<br></div>
-        <div class="prompt">click to enter</div>
+<div class="cursor-dot" id="cdot"></div>
+<div class="cursor-ring" id="cring"></div>
+
+<div id="entrance">
+    <p class="ent-eyebrow">Angela Yang</p>
+    <h1 class="ent-name">yeong</h1>
+    <p class="ent-tagline">marks, silences, and me</p>
+    <p class="ent-prompt">click to enter</p>
+</div>
+
+<div id="topbar">
+    <span class="tb-logo">yeong</span>
+    <div class="tb-right">
+        <button id="bgm-toggle">music · off</button>
     </div>
+</div>
 
-    <h1 class="main-title" id="main-title">YEONG</h1>
+<div id="room">
 
-    <div id="emotional-room">
-        <div class="art-locator" id="item-ecstasy" data-series="ecstasy">
-            <div class="anim-drift type-1"><div class="anim-breathe type-1">
-                <img class="anim-glow" src="Nothing but the Night.jpg" alt="Ecstasy">
-                <div class="series-title">ecstasy that ends in nothing</div>
-            </div></div>
-        </div>
-        <div class="art-locator" id="item-greydays" data-series="greydays">
-            <div class="anim-drift type-2"><div class="anim-breathe type-2">
-                <img class="anim-glow" src="My body holds a river.jpg" alt="Grey Days">
-                <div class="series-title">grey days</div>
-            </div></div>
-        </div>
-        <div class="art-locator" id="item-untitled" data-series="untitled">
-            <div class="anim-drift type-2"><div class="anim-breathe type-1">
-                <img class="anim-glow" src="Clean us like the rain in spring.png" alt="Untitled">
-                <div class="series-title">untitled</div>
-            </div></div>
-        </div>
-        <div class="art-locator" id="item-elsewhere" data-series="elsewhere">
-            <div class="anim-drift type-1"><div class="anim-breathe type-2">
-                <img class="anim-glow" src="I saw the cracks in your halo and stayed.jpg" alt="Elsewhere">
-                <div class="series-title">elsewhere</div>
-            </div></div>
-        </div>
-        <div class="art-locator" id="item-growth" data-series="growth">
-            <div class="anim-drift type-1"><div class="anim-breathe type-1">
-                <img class="anim-glow" src="The flowers don't know I'm dying here.jpg" alt="Growth">
-                <div class="series-title">do i still got time to grow</div>
-            </div></div>
-        </div>
-        <div class="art-locator" id="item-dream" data-series="dream">
-            <div class="anim-drift type-2"><div class="anim-breathe type-2">
-                <img class="anim-glow" src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" alt="Dream">
-                <div class="series-title">dream only</div>
-            </div></div>
-        </div>
-    </div>
-
-    <div id="series-gallery">
-        <div class="gallery-close" onclick="closeGallery()">back to room</div>
-        <div class="gallery-content" id="gallery-content"></div>
-    </div>
-
-    <div id="lightbox">
-        <div class="lb-content">
-            <img src="" class="lb-img" id="lb-img">
-            <div class="lb-info" id="lb-info">
-                <div class="lb-title" id="lb-title"></div>
-                <div class="lb-meta" id="lb-meta"></div>
+    <div class="piece" id="p-ecstasy" data-series="ecstasy">
+        <div class="drift-a breathe">
+            <div class="piece-inner">
+                <img src="Nothing but the Night.jpg" alt="Ecstasy that ends in nothing">
             </div>
+            <span class="piece-label">ecstasy that ends in nothing</span>
         </div>
     </div>
 
-    <footer>
-        <a href="https://www.instagram.com/xzua.no?igsh=dTl2YzI2ZXNnbWpk" target="_blank" rel="noopener noreferrer">instagram</a>
-    </footer>
+    <div class="piece" id="p-greydays" data-series="greydays">
+        <div class="drift-b breathe">
+            <div class="piece-inner">
+                <img src="My body holds a river.jpg" alt="grey days">
+            </div>
+            <span class="piece-label">grey days</span>
+        </div>
+    </div>
 
-    <div id="bgm-toggle">music · off</div>
-    <audio id="bgm" loop preload="auto">
-        <source src="致青春.mp3" type="audio/mpeg">
-    </audio>
+    <div class="piece" id="p-elsewhere" data-series="elsewhere">
+        <div class="drift-c breathe">
+            <div class="piece-inner">
+                <img src="I saw the cracks in your halo and stayed.jpg" alt="elsewhere">
+            </div>
+            <span class="piece-label">elsewhere</span>
+        </div>
+    </div>
 
-    <script>
-        const entrance = document.getElementById('entrance');
-        const room = document.getElementById('emotional-room');
-        const mainTitle = document.getElementById('main-title');
-        const footer = document.querySelector('footer');
-        const bgmToggle = document.getElementById('bgm-toggle');
-        const bgm = document.getElementById('bgm');
-        let isBgmPlaying = false;
+    <div class="piece" id="p-untitled" data-series="untitled">
+        <div class="drift-b breathe">
+            <div class="piece-inner">
+                <img src="Clean us like the rain in spring.png" alt="Untitled">
+            </div>
+            <span class="piece-label">untitled</span>
+        </div>
+    </div>
 
-        // ===== 3. 微视差效果与定制光标脚本 =====
-        if (window.matchMedia("(pointer: fine)").matches) {
-            const cursor = document.createElement('div');
-            cursor.classList.add('custom-cursor');
-            document.body.appendChild(cursor);
+    <div class="piece" id="p-growth" data-series="growth">
+        <div class="drift-a breathe">
+            <div class="piece-inner">
+                <img src="The flowers don't know I'm dying here.jpg" alt="Let me know">
+            </div>
+            <span class="piece-label">do i still got time to grow</span>
+        </div>
+    </div>
 
-            document.addEventListener('mousemove', (e) => {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
+    <div class="piece" id="p-dream" data-series="dream">
+        <div class="drift-c breathe">
+            <div class="piece-inner">
+                <img src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" alt="Dream Only">
+            </div>
+            <span class="piece-label">dream only</span>
+        </div>
+    </div>
 
-                // 视差：鼠标移动时，房间发生反向轻微位移
-                if (!room.classList.contains('is-locked')) {
-                    const moveX = (window.innerWidth / 2 - e.clientX) / 45;
-                    const moveY = (window.innerHeight / 2 - e.clientY) / 45;
-                    room.style.transform = `translate(${moveX}px, ${moveY}px)`;
-                } else {
-                    room.style.transform = `translate(0, 0)`;
-                }
-            });
+</div>
 
-            // 悬停交互
-            const updateHover = () => {
-                const interactables = document.querySelectorAll('.art-locator, #bgm-toggle, .gallery-close, #entrance, footer a, .gallery-item');
-                interactables.forEach(el => {
-                    el.onmouseenter = () => cursor.classList.add('is-hover');
-                    el.onmouseleave = () => cursor.classList.remove('is-hover');
-                });
-            };
-            updateHover();
-            // 每次打开画廊重新绑定
-            const observer = new MutationObserver(updateHover);
-            observer.observe(document.getElementById('gallery-content'), { childList: true });
-        }
+<div id="gallery">
+    <div class="gallery-header">
+        <h2 class="gallery-series-name" id="gallery-title"></h2>
+        <button class="gallery-back" id="gallery-back">← back to room</button>
+    </div>
+    <div class="gallery-works" id="gallery-works"></div>
+</div>
 
-        // BGM 控制
-        bgm.volume = 0.3;
-        entrance.addEventListener('click', () => {
-            bgm.play().then(() => { isBgmPlaying = true; bgmToggle.innerText = 'music · on'; });
-            entrance.classList.add('hidden');
-            setTimeout(() => {
-                room.style.opacity = '1';
-                mainTitle.style.opacity = '1';
-                footer.style.opacity = '1';
-                bgmToggle.style.opacity = '1';
-            }, 200);
-        }, { once: true });
+<div id="lb">
+    <button id="lb-close">[ close ]</button>
+    <div class="lb-img-wrap">
+        <img src="" id="lb-img" alt="">
+    </div>
+    <div class="lb-caption" id="lb-caption">
+        <div class="lb-caption-title" id="lb-title"></div>
+        <div class="lb-caption-meta" id="lb-meta"></div>
+    </div>
+    <div class="lb-nav">
+        <button id="lb-prev">← prev</button>
+        <button id="lb-next">next →</button>
+    </div>
+</div>
 
-        bgmToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (isBgmPlaying) { bgm.pause(); bgmToggle.innerText = 'music · off'; } 
-            else { bgm.play(); bgmToggle.innerText = 'music · on'; }
-            isBgmPlaying = !isBgmPlaying;
+<div id="footer">
+    <a href="https://www.instagram.com/xzua.no?igsh=dTl2YzI2ZXNnbWpk" target="_blank" rel="noopener noreferrer">instagram</a>
+</div>
+
+<audio id="bgm" loop preload="auto">
+    <source src="致青春.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const seriesData = {
+    untitled: {
+        name: 'Untitled',
+        works: [
+            { src: "Clean us like the rain in spring.png", title: "Clean us like the rain in spring", year: '2025', medium: 'Oil on Canvas' },
+            { src: "Hiding in a disguise of an ever giving flower.png", title: "Hiding in a disguise of an ever giving flower", year: '2025', medium: 'Oil on Canvas' }
+        ]
+    },
+    ecstasy: {
+        name: 'Ecstasy that ends in nothing',
+        works: [
+            { src: "Nothing but the Night.jpg", title: "Nothing but the Night", year: '2024', medium: 'Lithograph on paper' },
+            { src: "The Running and Nothing.jpg", title: "The Running and Nothing Else", year: '2024', medium: 'Lithograph on paper' },
+            { src: "No feelings Just lies Everywhere.jpg", title: "No feelings Just lies Everywhere", year: '2024', medium: 'Lithograph on paper' },
+            { src: "They take my body Steal my thoughts. Call it justice Call me guilty.jpeg", title: "They take my body Steal my thoughts Call it justice Call me guilty", year: '2024', medium: 'Lithograph on paper' },
+            { src: "Mystery Remains.jpg", title: "Mystery Remains", year: '2024', medium: 'Lithograph on paper' },
+            { src: "Give me everything.jpg", title: "Give me everything", year: '2019', medium: 'Lithograph on paper' }
+        ]
+    },
+    greydays: {
+        name: 'grey days',
+        works: [
+            { src: "That's where I wanna be.jpg", title: "That's where I wanna be", year: '2018', medium: 'Oil on Canvas' },
+            { src: "Is There Someone Else.jpg", title: "Is There Someone Else?", year: '2022', medium: 'Oil on linen' },
+            { src: "Beyond the Bars the Water Sings.jpg", title: "Beyond the Bars the Water Sings", year: '2022', medium: 'Oil on canvas' },
+            { src: "My body holds a river.jpg", title: "My body holds a river", year: '2022', medium: 'Oil on paper' },
+            { src: "For You a Thousand Times Over.jpg", title: "For You, a Thousand Times Over", year: '2021', medium: 'Mixed Media on Paper' }
+        ]
+    },
+    elsewhere: {
+        name: 'elsewhere',
+        works: [
+            { src: "Breathe Air without weight.png", title: "Breathe Air without weight", year: '2025', medium: 'Oil on Canvas' },
+            { src: "I saw the cracks in your halo and stayed.jpg", title: "I saw the cracks in your halo and stayed", year: '2025', medium: 'Oil on Canvas' },
+            { src: "我怀疑人们的生活 有所掩饰.png", title: "我怀疑人们的生活 有所掩饰", year: '2025', medium: 'Oil on Canvas' },
+            { src: "They don't want me They want my performance.jpg", title: "They don't want me They want my performance", year: '2025', medium: 'Oil on Canvas' },
+            { src: "Soft Under Dim Light.png", title: "Soft Under Dim Light", year: '2025', medium: 'Oil on Canvas' },
+            { src: "Almost there Almost gone.jpg", title: "Almost there Almost gone", year: '2025', medium: 'Oil on Canvas' }
+        ]
+    },
+    growth: {
+        name: 'Let me know Do I still got time to grow',
+        works: [
+            { src: "Growth Archive.jpg", title: "Growth Archive", year: '2019', medium: 'Mixed Media on Paper' },
+            { src: "00 00.jpg", title: "00:00", year: '2019', medium: 'Oil on Canvas' },
+            { src: "Stuck in the ticking.jpg", title: "Stuck in the ticking", year: '2019', medium: 'Watercolor on Paper' },
+            { src: "This can't be right.jpg", title: "This can't be right", year: '2019', medium: 'Watercolor on Paper' },
+            { src: "No One  Not One Gone.jpg", title: "No One Not One Gone?", year: '2019', medium: 'Mixed Media on Paper' },
+            { src: "It gets better' but when.jpg", title: "It gets better but when?", year: '2019', medium: 'Mixed Media on Paper' },
+            { src: "Growth Archive 2.jpg", title: "Growth Archive 2", year: '2019', medium: 'Mixed Media on Paper' },
+            { src: "hold up hold up.jpg", title: "hold up hold up", year: '2019', medium: 'Watercolor on paper' },
+            { src: "The flowers don't know I'm dying here.jpg", title: "The flowers don't know I'm dying here", year: '2019', medium: 'Watercolor and colored pencil on paper' },
+            { src: "No Child Left Behind.jpg", title: "No Child Left Behind", year: '2019', medium: 'Watercolor on paper' },
+            { src: "No one knows.jpg", title: "No one knows", year: '2019', medium: 'Acrylic on canvas' }
+        ]
+    },
+    dream: {
+        name: 'Dream Only',
+        works: [
+            { src: "mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png", title: "In this world right now I only have you", year: '2018', medium: 'Procreate on iPad' }
+        ]
+    }
+};
+
+// ── Elements ──
+const entrance  = document.getElementById('entrance');
+const topbar    = document.getElementById('topbar');
+const room      = document.getElementById('room');
+const footer    = document.getElementById('footer');
+const gallery   = document.getElementById('gallery');
+const gTitle    = document.getElementById('gallery-title');
+const gWorks    = document.getElementById('gallery-works');
+const gBack     = document.getElementById('gallery-back');
+const lb        = document.getElementById('lb');
+const lbImg     = document.getElementById('lb-img');
+const lbCaption = document.getElementById('lb-caption');
+const lbTitle   = document.getElementById('lb-title');
+const lbMeta    = document.getElementById('lb-meta');
+const lbClose   = document.getElementById('lb-close');
+const lbPrev    = document.getElementById('lb-prev');
+const lbNext    = document.getElementById('lb-next');
+const bgmToggle = document.getElementById('bgm-toggle');
+const bgm       = document.getElementById('bgm');
+const pieces    = document.querySelectorAll('.piece');
+
+let bgmPlaying = false;
+let currentWorks = [];
+let currentLbIdx = 0;
+
+// ── Cursor ──
+const cdot  = document.getElementById('cdot');
+const cring = document.getElementById('cring');
+let cx=0,cy=0,rx=0,ry=0;
+if (cdot && cring) {
+    document.addEventListener('mousemove', e => {
+        cx = e.clientX; cy = e.clientY;
+        cdot.style.left = cx+'px'; cdot.style.top = cy+'px';
+    });
+    (function loop() {
+        rx += (cx-rx)*.12; ry += (cy-ry)*.12;
+        cring.style.left = rx+'px'; cring.style.top = ry+'px';
+        requestAnimationFrame(loop);
+    })();
+    const hovers = () => document.querySelectorAll('.piece, .gallery-back, #bgm-toggle, #gallery-back, #lb-close, .lb-nav button, #footer a, .work-item img');
+    document.addEventListener('mouseover', e => { if ([...hovers()].some(el=>el.contains(e.target))) cring.classList.add('hover'); });
+    document.addEventListener('mouseout',  e => { if ([...hovers()].some(el=>el.contains(e.target))) cring.classList.remove('hover'); });
+}
+
+// ── Parallax ──
+document.addEventListener('mousemove', e => {
+    if (room.classList.contains('locked')) return;
+    const dx = (window.innerWidth/2  - e.clientX) / 50;
+    const dy = (window.innerHeight/2 - e.clientY) / 50;
+    room.style.transform = `translate(${dx}px,${dy}px)`;
+});
+
+// ── Enter ──
+entrance.addEventListener('click', () => {
+    bgm.volume = 0.25;
+    bgm.play().then(() => { bgmPlaying = true; bgmToggle.textContent = 'music · on'; }).catch(()=>{});
+    entrance.classList.add('gone');
+    setTimeout(() => {
+        room.classList.add('visible');
+        topbar.classList.add('visible');
+        footer.classList.add('visible');
+    }, 200);
+}, { once: true });
+
+// ── BGM ──
+bgmToggle.addEventListener('click', e => {
+    e.stopPropagation();
+    if (bgmPlaying) { bgm.pause(); bgmToggle.textContent = 'music · off'; }
+    else            { bgm.play();  bgmToggle.textContent = 'music · on';  }
+    bgmPlaying = !bgmPlaying;
+});
+
+// ── Open Series ──
+function openSeries(key) {
+    const s = seriesData[key];
+    if (!s) return;
+    currentWorks = s.works;
+    gTitle.textContent = s.name;
+    gWorks.innerHTML = '';
+
+    s.works.forEach((w, i) => {
+        const item = document.createElement('div');
+        item.className = 'work-item';
+        item.innerHTML = `
+            <img src="${w.src}" alt="${w.title}" loading="lazy">
+            <div class="work-info">
+                <span class="work-title">${w.title}</span>
+                <span class="work-meta">${w.year}<br>${w.medium}</span>
+            </div>`;
+        item.querySelector('img').addEventListener('click', () => openLb(i));
+        gWorks.appendChild(item);
+    });
+
+    gallery.classList.add('open');
+    gallery.scrollTop = 0;
+
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.08 });
+    setTimeout(() => gWorks.querySelectorAll('.work-item').forEach(el => obs.observe(el)), 100);
+}
+
+// ── Piece click ──
+pieces.forEach(p => {
+    p.addEventListener('click', () => {
+        if (room.classList.contains('locked')) return;
+        room.classList.add('locked');
+        room.style.transform = 'translate(0,0)';
+        topbar.style.opacity = '0';
+        footer.style.opacity = '0';
+
+        pieces.forEach(other => {
+            if (other !== p) other.classList.add('faded');
         });
+        p.classList.add('selected');
+        p.classList.remove('returning');
 
-        // 核心画廊逻辑
-        const seriesData = {
-            'untitled': [{ src: "Clean us like the rain in spring.png", title: "Clean us like the rain in spring", year: '2025', medium: 'Oil on Canvas' }, { src: "Hiding in a disguise of an ever giving flower.png", title: "Hiding in a disguise of an ever giving flower", year: '2025', medium: 'Oil on Canvas' }],
-            'ecstasy': [{ src: "Nothing but the Night.jpg", title: "Nothing but the Night", year: '2024', medium: 'Lithograph on paper' }, { src: "The Running and Nothing.jpg", title: "The Running and Nothing Else", year: '2024', medium: 'Lithograph on paper' }, { src: "No feelings Just lies Everywhere.jpg", title: "No feelings Just lies Everywhere", year: '2024', medium: 'Lithograph on paper' }, { src: "They take my body Steal my thoughts. Call it justice Call me guilty.jpeg", title: "They take my body Steal my thoughts Call it justice Call me guilty", year: '2024', medium: 'Lithograph on paper' }, { src: "Mystery Remains.jpg", title: "Mystery Remains", year: '2024', medium: 'Lithograph on paper' }, { src: "Give me everything.jpg", title: "Give me everything", year: '2019', medium: 'Lithograph on paper' }],
-            'greydays': [{ src: "That's where I wanna be.jpg", title: "That's where I wanna be", year: '2018', medium: 'Oil on Canvas' }, { src: "s There Someone Else.jpg", title: "Is There Someone Else?", year: '2022', medium: 'Oil on linen' }, { src: "Beyond the Bars the Water Sings.jpg", title: "Beyond the Bars the Water Sings", year: '2022', medium: 'Oil on canvas' }, { src: "My body holds a river.jpg", title: "My body holds a river", year: '2022', medium: 'Oil on paper' }, { src: "For You a Thousand Times Over.jpg", title: "For You, a Thousand Times Over", year: '2021', medium: 'Mixed Media on Paper' }],
-            'elsewhere': [{ src: "Breathe Air without weight.png", title: "Breathe Air without weight", year: '2025', medium: 'Oil on Canvas' }, { src: "I saw the cracks in your halo and stayed.jpg", title: "I saw the cracks in your halo and stayed", year: '2025', medium: 'Oil on Canvas' }, { src: "我怀疑人们的生活 有所掩饰.png", title: "我怀疑人们的生活 有所掩饰", year: '2025', medium: 'Oil on Canvas' }, { src: "They don't want me They want my performance.jpg", title: "They don't want me They want my performance", year: '2025', medium: 'Oil on Canvas' }, { src: "Soft Under Dim Light.png", title: "Soft Under Dim Light", year: '2025', medium: 'Oil on Canvas' }, { src: "Almost there Almost gone.jpg", title: "Almost there Almost gone", year: '2025', medium: 'Oil on Canvas' }],
-            'growth': [{ src: "Growth Archive.jpg", title: "Growth Archive", year: '2019', medium: 'Mixed Media on Paper' }, { src: "00 00.jpg", title: "00:00", year: '2019', medium: 'Oil on Canvas' }, { src: "Stuck in the ticking.jpg", title: "Stuck in the ticking", year: '2019', medium: 'Watercolor on Paper' }, { src: "This can't be right.jpg", title: "This can't be right", year: '2019', medium: 'Watercolor on Paper' }, { src: "No One  Not One Gone.jpg", title: "No One Not One Gone?", year: '2019', medium: 'Mixed Media on Paper' }, { src: "It gets better' but when.jpg", title: "It gets better' but when?", year: '2019', medium: 'Mixed Media on Paper' }, { src: "Growth Archive 2.jpg", title: "Growth Archive 2", year: '2019', medium: 'Mixed Media on Paper' }, { src: "hold up hold up.jpg", title: "hold up hold up", year: '2019', medium: 'Watercolor on paper' }, { src: "The flowers don't know I'm dying here.jpg", title: "The flowers don't know I'm dying here", year: '2019', medium: 'Watercolor and colored pencil on paper' }, { src: "No Child Left Behind.jpg", title: "No Child Left Behind", year: '2019', medium: 'Watercolor on paper' }, { src: "No one knows.jpg", title: "No one knows", year: '2019', medium: 'Acrylic on canvas' }],
-            'dream': [{ src: "mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png", title: "In this world right now I only have you", year: '2018', medium: 'Procreate on iPad' }]
-        };
+        if (window.innerWidth > 768) {
+            p.style.transition = 'all 1s cubic-bezier(.25,1,.5,1)';
+            p.style.top  = '50vh';
+            p.style.left = '50vw';
+            p.style.transform = 'translate(-50%,-50%) scale(1.1)';
+        }
 
-        const artItems = document.querySelectorAll('.art-locator');
-        const gallery = document.getElementById('series-gallery');
-        const galleryContent = document.getElementById('gallery-content');
-        const lightbox = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lb-img');
-        const lbInfo = document.getElementById('lb-info');
+        setTimeout(() => openSeries(p.dataset.series), 900);
+    });
+});
 
-        artItems.forEach(item => {
-            item.addEventListener('click', () => {
-                if (room.classList.contains('is-locked')) return;
-                room.classList.add('is-locked');
-                mainTitle.style.opacity = '0'; footer.style.opacity = '0'; bgmToggle.style.opacity = '0';
-                artItems.forEach(other => { if (other !== item) other.classList.add('is-faded'); });
-                item.classList.add('is-selected');
-                if (window.innerWidth > 768) {
-                    item.style.top = '50vh'; item.style.left = '50vw';
-                    item.style.transform = `translate(-50%, -50%) scale(1.2)`;
-                }
-                setTimeout(() => item.querySelector('.series-title').classList.add('show'), 500);
-                setTimeout(() => openGallery(item.dataset.series), 1500);
-            });
+// ── Back to room ──
+gBack.addEventListener('click', () => {
+    gallery.classList.remove('open');
+    setTimeout(() => {
+        room.classList.remove('locked');
+        topbar.style.opacity = '1';
+        footer.style.opacity = '1';
+        pieces.forEach(p => {
+            p.classList.remove('faded','selected');
+            p.classList.add('returning');
+            p.style.top = ''; 
+            p.style.left = '';
+            p.style.transform = '';
+            setTimeout(() => { p.classList.remove('returning'); p.style.transition = ''; }, 1000);
         });
+    }, 600);
+});
 
-        function openGallery(seriesKey) {
-            galleryContent.innerHTML = '';
-            (seriesData[seriesKey] || []).forEach(art => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'gallery-item';
-                const img = document.createElement('img');
-                img.src = art.src;
-                wrapper.onclick = () => openLightbox(art);
-                wrapper.appendChild(img);
-                galleryContent.appendChild(wrapper);
-            });
-            gallery.classList.add('active');
-            if (window.innerWidth > 768) document.body.style.overflow = 'auto';
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('reveal'); });
-            }, { threshold: 0.1 });
-            setTimeout(() => galleryContent.querySelectorAll('.gallery-item').forEach(el => observer.observe(el)), 100);
-        }
+// ── Lightbox ──
+function openLb(idx) {
+    currentLbIdx = idx;
+    const w = currentWorks[idx];
+    
+    if (lb.classList.contains('open')) {
+        lbImg.classList.remove('shown');
+        lbCaption.classList.remove('shown');
+        
+        setTimeout(() => {
+            renderLbContent(w);
+        }, 300);
+    } else {
+        lb.classList.add('open');
+        renderLbContent(w);
+    }
+}
 
-        function openLightbox(art) {
-            lbImg.src = art.src;
-            document.getElementById('lb-title').innerText = art.title;
-            document.getElementById('lb-meta').innerText = `${art.year} — ${art.medium}`;
-            lightbox.classList.add('active');
-            setTimeout(() => lbInfo.classList.add('revealed'), 600);
-        }
+function renderLbContent(w) {
+    lbImg.src = w.src;
+    lbImg.onload = () => lbImg.classList.add('shown');
+    lbTitle.textContent = w.title;
+    lbMeta.textContent  = `${w.year} — ${w.medium}`;
+    lbCaption.classList.add('shown');
+}
 
-        function closeLightbox() {
-            lightbox.classList.remove('active'); lbInfo.classList.remove('revealed');
-            setTimeout(() => lbImg.src = '', 400);
-        }
+function closeLb() {
+    lb.classList.remove('open');
+    lbImg.classList.remove('shown');
+    lbCaption.classList.remove('shown');
+    setTimeout(() => { lbImg.src = ''; }, 400);
+}
 
-        function closeGallery() {
-            gallery.classList.remove('active');
-            if (window.innerWidth > 768) document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                room.classList.remove('is-locked');
-                mainTitle.style.opacity = '1'; footer.style.opacity = '1'; bgmToggle.style.opacity = '1';
-                artItems.forEach(item => {
-                    item.classList.remove('is-faded', 'is-selected');
-                    item.style.top = ''; item.style.left = ''; item.style.transform = '';
-                    const title = item.querySelector('.series-title');
-                    if (title) title.classList.remove('show');
-                });
-            }, 1000);
-        }
+function lbGo(dir) {
+    const n = (currentLbIdx + dir + currentWorks.length) % currentWorks.length;
+    openLb(n);
+}
 
-        lightbox.onclick = closeLightbox;
-    </script>
+lbClose.addEventListener('click', closeLb);
+lbPrev.addEventListener('click', () => lbGo(-1));
+lbNext.addEventListener('click', () => lbGo(1));
+lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { if (lb.classList.contains('open')) closeLb(); else if (gallery.classList.contains('open')) gBack.click(); }
+    if (lb.classList.contains('open')) {
+        if (e.key === 'ArrowLeft')  lbGo(-1);
+        if (e.key === 'ArrowRight') lbGo(1);
+    }
+});
+</script>
 </body>
 </html>
