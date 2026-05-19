@@ -24,7 +24,7 @@
             background: var(--bg);
             color: var(--ink);
             font-family: 'Cormorant Garamond', Georgia, serif;
-            overflow: hidden;
+            overflow: hidden; /* 电脑端保持锁定，靠动态特效 */
             -webkit-font-smoothing: antialiased;
         }
 
@@ -160,7 +160,7 @@
                 0 8px 40px rgba(0,0,0,.6),
                 0 2px 8px rgba(0,0,0,.4);
             transition: box-shadow .6s ease, transform .6s ease;
-            min-height: 50px; /* 防止图片碎掉时容器完全塌陷 */
+            min-height: 50px;
         }
 
         .piece:hover .piece-inner {
@@ -176,7 +176,6 @@
             filter: brightness(.88) saturate(.9);
             transition: filter .6s ease;
         }
-        /* 防碎图丑陋边框处理 */
         .piece img:not([src]), .work-item img:not([src]) { opacity: 0; } 
         
         .piece:hover img {
@@ -232,7 +231,7 @@
         #gallery.open { opacity: 1; visibility: visible; }
 
         .gallery-header {
-            position: sticky; top: 0; z-index: 10;
+            position: sticky; top: 0; z-index: 850;
             display: flex; justify-content: space-between; align-items: flex-end;
             padding: 40px 56px 32px;
             border-bottom: 1px solid rgba(240,237,230,.06);
@@ -301,7 +300,7 @@
             line-height: 1.8;
         }
 
-        /* ── LIGHTBOX ── */
+        /* ── LIGHTBOX (修复遮挡卡死的核心样式) ── */
         #lb {
             position: fixed; inset: 0; z-index: 800;
             background: rgba(4,4,3,.98);
@@ -311,10 +310,12 @@
         }
         #lb.open { opacity: 1; visibility: visible; }
 
+        /* 图片容器降低 z-index 释放上层空间 */
         .lb-img-wrap {
             position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
-            padding: 72px 56px 56px;
+            padding: 80px 56px 80px;
+            z-index: 810; 
         }
         #lb-img {
             max-width: 100%; max-height: 100%;
@@ -327,6 +328,7 @@
         .lb-caption {
             position: absolute; bottom: 36px; left: 56px;
             opacity: 0; transition: opacity .4s ease;
+            z-index: 830;
         }
         .lb-caption.shown { opacity: 1; }
         .lb-caption-title {
@@ -340,19 +342,24 @@
             color: rgba(240,237,230,.25);
         }
 
+        /* 大幅提升 close 按钮图层（z-index: 850），增加 padding 扩大点击范围 */
         #lb-close {
             position: absolute; top: 28px; right: 44px;
             font-family: 'DM Mono', monospace;
             font-size: 8px; letter-spacing: .2em;
-            color: rgba(240,237,230,.2);
+            color: rgba(240,237,230,.4);
             background: none; border: none;
             transition: color .3s;
+            padding: 15px; 
+            margin: -15px;
+            z-index: 850; 
         }
-        #lb-close:hover { color: rgba(240,237,230,.6); }
+        #lb-close:hover { color: rgba(240,237,230,.9); }
 
         .lb-nav {
             position: absolute; bottom: 36px; right: 44px;
             display: flex; gap: 16px;
+            z-index: 830;
         }
         .lb-nav button {
             font-family: 'DM Mono', monospace;
@@ -380,19 +387,45 @@
 
         /* ── MOBILE ── */
         @media (max-width: 768px) {
-            #room { overflow-y: auto; height: auto; overflow: visible; }
+            html, body {
+                overflow-y: auto !important;
+                height: auto !important;
+            }
+            #room {
+                position: relative !important;
+                height: auto !important;
+                min-height: 100vh;
+                padding-top: 80px;
+                padding-bottom: 100px;
+                opacity: 0;
+                transition: opacity 1.2s ease .2s;
+                transform: none !important;
+            }
             #p-ecstasy, #p-greydays, #p-elsewhere, #p-untitled, #p-growth, #p-dream {
                 position: relative !important; top: auto !important; left: auto !important;
-                transform: none !important; width: 65vw !important;
-                margin: 40px auto !important; display: block;
+                transform: none !important; width: 80vw !important;
+                margin: 60px auto !important; display: block;
+            }
+            .piece-label {
+                opacity: 1 !important;
+                bottom: -32px;
+                color: rgba(240,237,230,.6);
             }
             #room::after { display: none; }
+            
+            #footer {
+                position: relative !important;
+                bottom: auto !important; left: auto !important; transform: none !important;
+                text-align: center; margin-top: 40px; padding-bottom: 40px;
+            }
+
             .gallery-header { padding: 28px 24px 20px; }
             .gallery-works { padding: 10vh 24px 16vh; gap: 12vh; }
-            .lb-img-wrap { padding: 56px 20px 80px; }
-            .lb-caption { left: 20px; }
-            .lb-nav { right: 20px; }
-            #topbar { padding: 20px 24px; }
+            .lb-img-wrap { padding: 64px 20px 90px; }
+            .lb-caption { left: 20px; bottom: 24px; }
+            .lb-nav { right: 20px; bottom: 24px; }
+            #topbar { padding: 20px 24px; position: absolute; }
+            #lb-close { right: 24px; top: 24px; font-size: 9px; }
         }
     </style>
 </head>
@@ -483,7 +516,7 @@
 
 <div id="lb">
     <button id="lb-close">[ close ]</button>
-    <div class="lb-img-wrap">
+    <div class="lb-img-wrap" id="lb-click-zone">
         <img src="" id="lb-img" alt="">
     </div>
     <div class="lb-caption" id="lb-caption">
@@ -528,7 +561,7 @@ const seriesData = {
         name: 'grey days',
         works: [
             { src: "That's where I wanna be.jpg", title: "That's where I wanna be", year: '2018', medium: 'Oil on Canvas' },
-            { src: "Is There Someone Else.jpg", title: "Is There Someone Else?", year: '2022', medium: 'Oil on linen' },
+            { src: "s There Someone Else.jpg", title: "Is There Someone Else?", year: '2022', medium: 'Oil on linen' },
             { src: "Beyond the Bars the Water Sings.jpg", title: "Beyond the Bars the Water Sings", year: '2022', medium: 'Oil on canvas' },
             { src: "My body holds a river.jpg", title: "My body holds a river", year: '2022', medium: 'Oil on paper' },
             { src: "For You a Thousand Times Over.jpg", title: "For You, a Thousand Times Over", year: '2021', medium: 'Mixed Media on Paper' }
@@ -569,7 +602,6 @@ const seriesData = {
     }
 };
 
-// ── Elements ──
 const entrance  = document.getElementById('entrance');
 const topbar    = document.getElementById('topbar');
 const room      = document.getElementById('room');
@@ -580,6 +612,7 @@ const gWorks    = document.getElementById('gallery-works');
 const gBack     = document.getElementById('gallery-back');
 const lb        = document.getElementById('lb');
 const lbImg     = document.getElementById('lb-img');
+const lbClickZone = document.getElementById('lb-click-zone');
 const lbCaption = document.getElementById('lb-caption');
 const lbTitle   = document.getElementById('lb-title');
 const lbMeta    = document.getElementById('lb-meta');
@@ -615,7 +648,7 @@ if (cdot && cring) {
 
 // ── Parallax ──
 document.addEventListener('mousemove', e => {
-    if (room.classList.contains('locked')) return;
+    if (room.classList.contains('locked') || window.innerWidth <= 768) return;
     const dx = (window.innerWidth/2  - e.clientX) / 50;
     const dy = (window.innerHeight/2 - e.clientY) / 50;
     room.style.transform = `translate(${dx}px,${dy}px)`;
@@ -665,6 +698,11 @@ function openSeries(key) {
     gallery.classList.add('open');
     gallery.scrollTop = 0;
 
+    if(window.innerWidth <= 768) {
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+    }
+
     const obs = new IntersectionObserver(entries => {
         entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
     }, { threshold: 0.08 });
@@ -676,42 +714,46 @@ pieces.forEach(p => {
     p.addEventListener('click', () => {
         if (room.classList.contains('locked')) return;
         room.classList.add('locked');
-        room.style.transform = 'translate(0,0)';
-        topbar.style.opacity = '0';
-        footer.style.opacity = '0';
-
-        pieces.forEach(other => {
-            if (other !== p) other.classList.add('faded');
-        });
-        p.classList.add('selected');
-        p.classList.remove('returning');
-
+        
         if (window.innerWidth > 768) {
+            room.style.transform = 'translate(0,0)';
+            topbar.style.opacity = '0';
+            footer.style.opacity = '0';
+            pieces.forEach(other => { if (other !== p) other.classList.add('faded'); });
+            p.classList.add('selected');
+            p.classList.remove('returning');
             p.style.transition = 'all 1s cubic-bezier(.25,1,.5,1)';
             p.style.top  = '50vh';
             p.style.left = '50vw';
             p.style.transform = 'translate(-50%,-50%) scale(1.1)';
+            setTimeout(() => openSeries(p.dataset.series), 900);
+        } else {
+            openSeries(p.dataset.series);
         }
-
-        setTimeout(() => openSeries(p.dataset.series), 900);
     });
 });
 
 // ── Back to room ──
 gBack.addEventListener('click', () => {
     gallery.classList.remove('open');
+    
+    if(window.innerWidth <= 768) {
+        document.documentElement.style.overflowY = 'auto';
+        document.body.style.overflowY = 'auto';
+    }
+
     setTimeout(() => {
         room.classList.remove('locked');
-        topbar.style.opacity = '1';
-        footer.style.opacity = '1';
-        pieces.forEach(p => {
-            p.classList.remove('faded','selected');
-            p.classList.add('returning');
-            p.style.top = ''; 
-            p.style.left = '';
-            p.style.transform = '';
-            setTimeout(() => { p.classList.remove('returning'); p.style.transition = ''; }, 1000);
-        });
+        if (window.innerWidth > 768) {
+            topbar.style.opacity = '1';
+            footer.style.opacity = '1';
+            pieces.forEach(p => {
+                p.classList.remove('faded','selected');
+                p.classList.add('returning');
+                p.style.top = ''; p.style.left = ''; p.style.transform = '';
+                setTimeout(() => { p.classList.remove('returning'); p.style.transition = ''; }, 1000);
+            });
+        }
     }, 600);
 });
 
@@ -723,10 +765,7 @@ function openLb(idx) {
     if (lb.classList.contains('open')) {
         lbImg.classList.remove('shown');
         lbCaption.classList.remove('shown');
-        
-        setTimeout(() => {
-            renderLbContent(w);
-        }, 300);
+        setTimeout(() => { renderLbContent(w); }, 300);
     } else {
         lb.classList.add('open');
         renderLbContent(w);
@@ -753,10 +792,27 @@ function lbGo(dir) {
     openLb(n);
 }
 
-lbClose.addEventListener('click', closeLb);
-lbPrev.addEventListener('click', () => lbGo(-1));
-lbNext.addEventListener('click', () => lbGo(1));
-lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+// 按钮独立点击关闭（加了阻止冒泡）
+lbClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeLb();
+});
+
+// 核心修复：点击大图之外的任意黑色空白区域也能直接关闭
+lbClickZone.addEventListener('click', (e) => {
+    if (e.target === lbClickZone) {
+        closeLb();
+    }
+});
+lb.addEventListener('click', (e) => {
+    if (e.target === lb) {
+        closeLb();
+    }
+});
+
+lbPrev.addEventListener('click', (e) => { e.stopPropagation(); lbGo(-1); });
+lbNext.addEventListener('click', (e) => { e.stopPropagation(); lbGo(1); });
+
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { if (lb.classList.contains('open')) closeLb(); else if (gallery.classList.contains('open')) gBack.click(); }
     if (lb.classList.contains('open')) {
