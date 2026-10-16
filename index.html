@@ -12,12 +12,14 @@
     <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvrGyEYOtbQ.woff2">
     <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/caveat/v23/Wnz6HAc5bAfYB2Q7ZjYY.woff2">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;1,200;1,300;1,400&family=DM+Mono:wght@300&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Noto Serif SC only for the one Chinese work title (subset via &text=) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&text=%E6%88%91%E6%80%80%E7%96%91%E4%BA%BA%E4%BB%AC%E7%9A%84%E7%94%9F%E6%B4%BB%E6%9C%89%E6%89%80%E6%8E%A9%E9%A5%B0&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --bg: #080806;
             --ink: #f0ede6;
-            --dim: #444440;
+            --dim: #8c8980;
             --faint: #222220;
             --accent: rgba(240,237,230,0.06);
         }
@@ -64,6 +66,15 @@
             transform: translate(-50%,-50%);
         }
 
+        /* ── CHARCOAL TRAIL: the cursor leaves faint marks that fade away ── */
+        #strokes {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            z-index: 260;
+            pointer-events: none;
+        }
+        @media (max-width: 768px) { #strokes { display: none; } }
+
         /* ── CUSTOM CURSOR ── */
         @media (pointer: fine) {
             *, body { cursor: none !important; }
@@ -101,7 +112,7 @@
 
         .ent-loading {
             font-family: 'DM Mono', monospace;
-            font-size: 8px; letter-spacing: .35em;
+            font-size: 11px; letter-spacing: .35em;
             color: var(--dim); text-transform: lowercase;
             animation: pulse 1.1s ease-in-out infinite;
         }
@@ -144,9 +155,10 @@
         }
         #bgm-toggle, #notes-open {
             font-family: 'DM Mono', monospace;
-            font-size: 8px; letter-spacing: .18em;
+            font-size: 11px; letter-spacing: .18em;
             color: var(--dim); text-transform: lowercase;
             background: none; border: none;
+            padding: 8px 2px;
             transition: color .3s;
         }
         #bgm-toggle:hover, #notes-open:hover { color: var(--ink); }
@@ -205,38 +217,46 @@
                 0 4px 16px rgba(0,0,0,.5);
         }
 
+        /* --lit (0..1) is set per piece from its distance to the lamp (JS).
+           --bk caps the brightness of far pieces, --blur softens them. */
         .piece img {
             width: 100%; display: block;
-            filter: brightness(.88) saturate(.9);
-            transition: filter .6s ease;
+            filter: brightness(calc((.30 + var(--lit, 0) * .70) * var(--bk, 1))) saturate(.9) blur(calc(var(--blur, 0) * 1px));
+            transition: filter .3s ease;
         }
         .piece img:not([src]), .work-item img:not([src]) { opacity: 0; }
 
-        .piece:hover img {
-            filter: brightness(1) saturate(1);
+        .piece:hover img, .piece.selected img {
+            filter: brightness(1) saturate(1) blur(0px);
         }
 
         .piece-label {
             position: absolute;
-            bottom: -26px; left: 50%;
+            bottom: -40px; left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-family: 'DM Mono', monospace;
-            font-size: 8px; letter-spacing: .22em;
-            color: rgba(240,237,230,.35);
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
+            font-size: clamp(17px, 1.7vw, 22px); font-style: italic; font-weight: 400;
+            letter-spacing: .01em;
+            color: rgba(240,237,230,.88);
             text-transform: lowercase;
             opacity: 0;
             transition: opacity .4s ease;
             pointer-events: none;
+            text-shadow: 0 2px 14px rgba(0,0,0,.85);
+            z-index: 30;
         }
         .piece:hover .piece-label { opacity: 1; }
 
-        #p-ecstasy   { top: 17vh; left: 50vw; width: clamp(100px, 13vw, 200px); }
-        #p-greydays  { top: 42vh; left: 20vw; width: clamp(90px, 11vw, 170px); }
-        #p-elsewhere { top: 38vh; left: 80vw; width: clamp(100px, 13vw, 200px); }
-        #p-untitled  { top: 55vh; left: 50vw; width: clamp(130px, 20vw, 280px); }
-        #p-growth    { top: 78vh; left: 28vw; width: clamp(80px, 10vw, 150px); }
-        #p-dream     { top: 76vh; left: 74vw; width: clamp(80px, 9vw,  140px); }
+        /* depth: near pieces are larger, sit in front and move more with the cursor;
+           far pieces are smaller, a little soft and never quite fully lit.
+           (data-depth on each .piece drives the parallax in JS) */
+        #p-ecstasy   { top: 17vh; left: 50vw; width: clamp(100px, 13vw, 200px); z-index: 11; }
+        #p-greydays  { top: 42vh; left: 20vw; width: clamp(70px, 8.5vw, 130px);  z-index: 7;  --blur: .7; --bk: .82; }
+        #p-elsewhere { top: 38vh; left: 80vw; width: clamp(110px, 15vw, 230px);  z-index: 12; }
+        #p-untitled  { top: 55vh; left: 50vw; width: clamp(140px, 22vw, 310px);  z-index: 14; }
+        #p-growth    { top: 78vh; left: 28vw; width: clamp(60px, 7.5vw, 115px);  z-index: 6;  --blur: .8; --bk: .8; }
+        #p-dream     { top: 76vh; left: 74vw; width: clamp(70px, 8vw, 125px);    z-index: 8;  --blur: .5; --bk: .86; }
 
         /* drift animations */
         @keyframes d1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-3px, 4px)} }
@@ -249,7 +269,6 @@
         .drift-c { animation: d3 13s ease-in-out infinite; }
         .breathe { animation: breathe 10s ease-in-out infinite; }
 
-        #room:not(.locked):hover .piece:not(:hover) { opacity: .28; }
         .piece.faded { opacity: 0 !important; pointer-events: none !important; transition: opacity .8s ease !important; }
         .piece.selected { opacity: 1 !important; z-index: 200 !important; }
 
@@ -280,12 +299,24 @@
         }
         .gallery-back {
             font-family: 'DM Mono', monospace;
-            font-size: 8px; letter-spacing: .2em;
+            font-size: 11px; letter-spacing: .2em;
             color: var(--dim); text-transform: lowercase;
             background: none; border: none;
-            transition: color .3s; padding-bottom: 4px;
+            transition: color .3s; padding: 10px 4px;
         }
         .gallery-back:hover { color: var(--ink); }
+        ::view-transition-old(piece-hero), ::view-transition-new(piece-hero) { animation-duration: .7s; }
+        .gh-left { min-width: 0; }
+        .gh-right { display: flex; align-items: center; gap: 26px; }
+        .gallery-statement {
+            font-size: 17px; font-style: italic; font-weight: 300;
+            color: rgba(240,237,230,.55); margin-top: 10px; line-height: 1.45;
+        }
+        .gallery-count {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px; letter-spacing: .22em;
+            color: var(--dim); white-space: nowrap;
+        }
 
         .gallery-works {
             display: flex; flex-direction: column;
@@ -303,8 +334,14 @@
         }
         .work-item.in { opacity: 1; transform: none; }
 
+        .work-frame { width: fit-content; max-width: 86%; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+        .work-item:nth-child(odd)  .work-frame { margin-left: 0; margin-right: auto; }
+        .work-item:nth-child(even) .work-frame { margin-left: auto; margin-right: 0; max-width: 70%; }
+        .work-item:nth-child(3n)   .work-frame { max-width: 78%; }
         .work-item img {
-            width: 100%; display: block;
+            width: auto; height: auto; max-width: 100%;
+            max-height: 82vh; max-height: 82svh;
+            display: block;
             box-shadow: 0 20px 80px rgba(0,0,0,.5);
             filter: brightness(.9);
             transition: filter .5s ease, transform .5s ease;
@@ -322,14 +359,15 @@
         .work-item.in .work-info { opacity: 1; }
 
         .work-title {
-            font-size: clamp(14px, 1.6vw, 18px);
-            font-style: italic; font-weight: 300;
-            color: rgba(240,237,230,.7); line-height: 1.4;
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
+            font-size: clamp(16px, 1.8vw, 21px);
+            font-style: italic; font-weight: 400;
+            color: rgba(240,237,230,.85); line-height: 1.4;
             max-width: 70%;
         }
         .work-meta {
             font-family: 'DM Mono', monospace;
-            font-size: 8px; letter-spacing: .12em;
+            font-size: 11px; letter-spacing: .12em;
             color: var(--dim); text-align: right;
             line-height: 1.8;
         }
@@ -355,7 +393,10 @@
             object-fit: contain; display: block;
             opacity: 0; transition: opacity .4s ease;
             box-shadow: 0 32px 120px rgba(0,0,0,.6);
+            transform-origin: 50% 50%;
+            -webkit-user-drag: none; user-select: none; -webkit-user-select: none;
         }
+        #lb-img.anim { transition: opacity .4s ease, transform .35s cubic-bezier(.2,.8,.2,1); }
         #lb-img.shown { opacity: 1; }
 
         .lb-caption {
@@ -365,20 +406,21 @@
         }
         .lb-caption.shown { opacity: 1; }
         .lb-caption-title {
-            font-size: 15px; font-style: italic; font-weight: 300;
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
+            font-size: 16px; font-style: italic; font-weight: 400;
             color: rgba(240,237,230,.7); margin-bottom: 6px;
             max-width: 480px; line-height: 1.5;
         }
         .lb-caption-meta {
             font-family: 'DM Mono', monospace;
-            font-size: 8px; letter-spacing: .12em;
+            font-size: 11px; letter-spacing: .12em;
             color: rgba(240,237,230,.25);
         }
 
         #lb-close {
             position: absolute; top: 28px; right: 44px;
             font-family: 'DM Mono', monospace;
-            font-size: 8px; letter-spacing: .2em;
+            font-size: 11px; letter-spacing: .2em;
             color: rgba(240,237,230,.4);
             background: none; border: none;
             transition: color .3s;
@@ -395,10 +437,10 @@
         }
         .lb-nav button {
             font-family: 'DM Mono', monospace;
-            font-size: 8px; letter-spacing: .15em;
-            color: rgba(240,237,230,.2);
+            font-size: 11px; letter-spacing: .15em;
+            color: rgba(240,237,230,.45);
             background: none; border: none;
-            padding: 6px; transition: color .3s;
+            padding: 10px 8px; transition: color .3s;
         }
         .lb-nav button:hover { color: rgba(240,237,230,.6); }
 
@@ -438,11 +480,8 @@
             border-right: 1px dashed rgba(240,237,230,.18);
         }
         #p-ecstasy .note   { top: -34px; right: -128px; transform: rotate(5deg); }
-        #p-greydays .note  { bottom: -28px; left: -118px; transform: rotate(-6deg); }
         #p-elsewhere .note { top: -28px; left: -138px; transform: rotate(-4deg); }
-        #p-untitled .note  { bottom: -34px; right: -128px; transform: rotate(4deg); }
         #p-growth .note    { top: -24px; left: -128px; transform: rotate(6deg); }
-        #p-dream .note     { bottom: -30px; right: -118px; transform: rotate(-5deg); }
 
         /* washi tape across every frame */
         .piece-inner::before {
@@ -505,12 +544,13 @@
             transform: rotate(-2deg); display: inline-block;
         }
         .notes-head .nh-title small {
-            font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .2em;
+            font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em;
             color: var(--dim); display: block; margin-top: 6px; transform: none;
         }
         #notes-close {
-            font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .2em;
+            font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em;
             color: var(--dim); text-transform: lowercase; background: none; border: none;
+            padding: 8px 2px;
             transition: color .3s;
         }
         #notes-close:hover { color: var(--ink); }
@@ -567,7 +607,7 @@
             transition: transform .5s cubic-bezier(.16,1,.3,1);
         }
         .ticket span {
-            font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .3em;
+            font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .3em;
             color: var(--dim); text-transform: uppercase; display: block; margin-bottom: 8px;
         }
         .ticket strong {
@@ -575,14 +615,51 @@
             color: rgba(240,237,230,.85);
         }
 
+        /* ── LAMP / HUSH / ZOOM (patch) ── */
+        .note {
+            opacity: calc(.25 + var(--lit, 0) * .75);
+            transition: opacity .35s ease;
+        }
+        .piece:hover .note, .piece.selected .note { opacity: 1; }
+        body.hushed .note { opacity: 0; transition: opacity 1.4s ease; }
+
+        .work-info { max-width: 100%; }
+
+        .lb-img-wrap { touch-action: none; user-select: none; -webkit-user-select: none; }
+        #lb-zoom {
+            position: absolute; top: 34px; left: 44px; z-index: 850;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px; letter-spacing: .2em;
+            color: rgba(240,237,230,.4); text-transform: lowercase;
+            pointer-events: none;
+        }
+        #lb.zoomed .lb-caption, #lb.zoomed .lb-nav { opacity: 0; pointer-events: none; }
+        .lb-nav { transition: opacity .3s ease; }
+        @media (max-width: 768px) { #lb-zoom { top: 30px; left: 24px; } }
+
+        /* the three remaining notes, each a different animal:
+           ecstasy is written straight on the wall, elsewhere is dated,
+           growth only appears when the lamp actually reaches it */
+        #p-ecstasy .note {
+            background: transparent; border: none; box-shadow: none;
+            font-size: 21px; color: rgba(233,227,211,.88);
+            padding: 0; max-width: 190px;
+        }
+        #p-ecstasy .note::before { display: none; }
+        .note-date {
+            display: block; margin-top: 5px;
+            font-family: 'DM Mono', monospace; font-size: 10px;
+            letter-spacing: .18em; color: rgba(233,227,211,.5);
+        }
+        #p-growth .note { opacity: calc(var(--lit, 0) * var(--lit, 0)); }
+        #p-growth:hover .note, #p-growth.selected .note { opacity: 1; }
+        body.hushed #p-growth .note { opacity: 0; }
+
         @media (max-width: 1150px) {
             .note { max-width: 130px; font-size: 15px; }
             #p-ecstasy .note { right: -90px; }
-            #p-greydays .note { left: -90px; }
             #p-elsewhere .note { left: -100px; }
-            #p-untitled .note { right: -90px; }
             #p-growth .note { left: -90px; }
-            #p-dream .note { right: -90px; }
         }
 
         /* ── MOBILE ── */
@@ -597,6 +674,7 @@
                 position: relative !important;
                 height: auto !important;
                 min-height: 100vh;
+                min-height: 100svh;
                 padding-top: 80px;
                 padding-bottom: 100px;
                 opacity: 0;
@@ -605,13 +683,20 @@
             }
             #p-ecstasy, #p-greydays, #p-elsewhere, #p-untitled, #p-growth, #p-dream {
                 position: relative !important; top: auto !important; left: auto !important;
-                transform: none !important; width: 80vw !important;
-                margin: 60px auto !important; display: block;
+                transform: none !important; display: block;
+                margin-top: 64px !important; margin-bottom: 118px !important;
             }
+            #p-ecstasy   { width: 78vw !important; margin-left: 6vw !important;  margin-right: auto !important; }
+            #p-greydays  { width: 58vw !important; margin-left: auto !important; margin-right: 7vw !important; }
+            #p-elsewhere { width: 72vw !important; margin-left: 9vw !important;  margin-right: auto !important; }
+            #p-untitled  { width: 82vw !important; margin-left: auto !important; margin-right: 5vw !important; }
+            #p-growth    { width: 55vw !important; margin-left: 8vw !important;  margin-right: auto !important; }
+            #p-dream     { width: 62vw !important; margin-left: auto !important; margin-right: 9vw !important; }
             .piece-label {
                 opacity: 1 !important;
-                bottom: -32px;
-                color: rgba(240,237,230,.6);
+                bottom: -44px;
+                font-size: 16px;
+                color: rgba(240,237,230,.78);
             }
             #room::after { display: none; }
 
@@ -626,17 +711,23 @@
             .lb-img-wrap { padding: 64px 20px 90px; }
             .lb-caption { left: 20px; bottom: 24px; }
             .lb-nav { right: 20px; bottom: 24px; }
-            #topbar { padding: 20px 24px; position: absolute; }
-            #lb-close { right: 24px; top: 24px; font-size: 9px; }
+            #topbar { padding: 16px 24px; position: fixed; background: linear-gradient(to bottom, rgba(8,8,6,.85), rgba(8,8,6,0)); }
+            #lb-close { right: 24px; top: 24px; font-size: 11px; }
             .note {
-                top: -14px !important; right: 8px !important;
-                left: auto !important; bottom: auto !important;
-                transform: rotate(4deg) !important;
-                font-size: 14px; padding: 6px 10px 7px; max-width: 150px;
+                top: calc(100% + 54px) !important; bottom: auto !important;
+                left: 10px !important; right: auto !important;
+                transform: rotate(-2deg) !important;
+                font-size: 14px; padding: 6px 10px 7px; max-width: 170px;
+                opacity: .95 !important;
             }
             .notes-board { gap: 40px 24px; padding: 6vh 20px 12vh; }
             .polaroid img { width: 200px; height: 200px; }
             .notes-head { padding: 24px 20px 18px; }
+            #bgm-toggle, #notes-open, #notes-close, .gallery-back { min-height: 44px; padding: 12px 8px; }
+            .lb-nav button { min-height: 44px; padding: 12px 10px; color: rgba(240,237,230,.55); }
+            #lb-close { min-width: 44px; min-height: 44px; }
+            .gallery-statement { font-size: 15px; }
+            .gh-right { gap: 14px; }
         }
     </style>
 </head>
@@ -645,6 +736,7 @@
 <div class="cursor-dot" id="cdot"></div>
 <div class="cursor-ring" id="cring"></div>
 <div id="spotlight"></div>
+<canvas id="strokes"></canvas>
 <div id="grain"></div>
 
 <div id="entrance">
@@ -663,7 +755,7 @@
 <div id="room">
 
 
-    <div class="piece" id="p-ecstasy" data-series="ecstasy">
+    <div class="piece" id="p-ecstasy" data-series="ecstasy" data-depth="1">
         <div class="drift-a breathe">
             <div class="piece-inner">
                 <img src="Nothing but the Night.jpg" alt="Ecstasy that ends in nothing">
@@ -673,37 +765,35 @@
         <span class="note">for the nights i couldn't sleep</span>
     </div>
 
-    <div class="piece" id="p-greydays" data-series="greydays">
+    <div class="piece" id="p-greydays" data-series="greydays" data-depth=".55">
         <div class="drift-b breathe">
             <div class="piece-inner">
                 <img src="My body holds a river.jpg" alt="grey days">
             </div>
             <span class="piece-label">grey days</span>
         </div>
-        <span class="note">it rained the whole week</span>
     </div>
 
-    <div class="piece" id="p-elsewhere" data-series="elsewhere">
+    <div class="piece" id="p-elsewhere" data-series="elsewhere" data-depth="1.25">
         <div class="drift-c breathe">
             <div class="piece-inner">
                 <img src="I saw the cracks in your halo and stayed.jpg" alt="elsewhere">
             </div>
             <span class="piece-label">elsewhere</span>
         </div>
-        <span class="note">i saw the cracks — and stayed</span>
+        <span class="note">i saw the cracks — and stayed<span class="note-date">oct 2025</span></span>
     </div>
 
-    <div class="piece" id="p-untitled" data-series="untitled">
+    <div class="piece" id="p-untitled" data-series="untitled" data-depth="1.7">
         <div class="drift-b breathe">
             <div class="piece-inner">
                 <img src="Clean us like the rain in spring.png" alt="Untitled">
             </div>
             <span class="piece-label">untitled</span>
         </div>
-        <span class="note">still no name for this one</span>
     </div>
 
-    <div class="piece" id="p-growth" data-series="growth">
+    <div class="piece" id="p-growth" data-series="growth" data-depth=".5">
         <div class="drift-a breathe">
             <div class="piece-inner">
                 <img src="The flowers don't know I'm dying here.jpg" alt="Let me know">
@@ -713,22 +803,27 @@
         <span class="note">am i growing yet?</span>
     </div>
 
-    <div class="piece" id="p-dream" data-series="dream">
+    <div class="piece" id="p-dream" data-series="dream" data-depth=".75">
         <div class="drift-c breathe">
             <div class="piece-inner">
                 <img src="mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png" alt="Dream Only">
             </div>
             <span class="piece-label">dream only</span>
         </div>
-        <span class="note">in this world, only you</span>
     </div>
 
 </div>
 
 <div id="gallery">
     <div class="gallery-header">
-        <h2 class="gallery-series-name" id="gallery-title"></h2>
-        <button class="gallery-back" id="gallery-back">← back to room</button>
+        <div class="gh-left">
+            <h2 class="gallery-series-name" id="gallery-title"></h2>
+            <p class="gallery-statement" id="gallery-statement"></p>
+        </div>
+        <div class="gh-right">
+            <span class="gallery-count" id="gallery-count"></span>
+            <button class="gallery-back" id="gallery-back">← back to room</button>
+        </div>
     </div>
     <div class="gallery-works" id="gallery-works"></div>
 </div>
@@ -743,8 +838,9 @@
 
 <div id="lb">
     <button id="lb-close">[ close ]</button>
+    <div id="lb-zoom"></div>
     <div class="lb-img-wrap" id="lb-click-zone">
-        <img src="" id="lb-img" alt="">
+        <img src="" id="lb-img" alt="" draggable="false">
     </div>
     <div class="lb-caption" id="lb-caption">
         <div class="lb-caption-title" id="lb-title"></div>
@@ -799,6 +895,7 @@ function startTypewriter() {
 const seriesData = {
     untitled: {
         name: 'Untitled',
+        statement: 'two paintings that never got named.',
         works: [
             { src: "Clean us like the rain in spring.png", title: "Clean us like the rain in spring", year: '2025', medium: 'Oil on Canvas' },
             { src: "Hiding in a disguise of an ever giving flower.png", title: "Hiding in a disguise of an ever giving flower", year: '2025', medium: 'Oil on Canvas' }
@@ -806,6 +903,7 @@ const seriesData = {
     },
     ecstasy: {
         name: 'Ecstasy that ends in nothing',
+        statement: 'lithographs — wanting everything, and getting the night.',
         works: [
             { src: "Nothing but the Night.jpg", title: "Nothing but the Night", year: '2024', medium: 'Lithograph on paper' },
             { src: "The Running and Nothing.jpg", title: "The Running and Nothing Else", year: '2024', medium: 'Lithograph on paper' },
@@ -817,6 +915,7 @@ const seriesData = {
     },
     greydays: {
         name: 'grey days',
+        statement: 'the colour of a week that would not lift.',
         works: [
             { src: "That's where I wanna be.jpg", title: "That's where I wanna be", year: '2018', medium: 'Oil on Canvas' },
             { src: "s There Someone Else.jpg", title: "Is There Someone Else?", year: '2022', medium: 'Oil on linen' },
@@ -827,6 +926,7 @@ const seriesData = {
     },
     elsewhere: {
         name: 'elsewhere',
+        statement: 'painted from inside the crack in the halo.',
         works: [
             { src: "Breathe Air without weight.png", title: "Breathe Air without weight", year: '2025', medium: 'Oil on Canvas' },
             { src: "I saw the cracks in your halo and stayed.jpg", title: "I saw the cracks in your halo and stayed", year: '2025', medium: 'Oil on Canvas' },
@@ -838,6 +938,7 @@ const seriesData = {
     },
     growth: {
         name: 'Let me know Do I still got time to grow',
+        statement: 'an archive of becoming, 2019.',
         works: [
             { src: "Growth Archive.jpg", title: "Growth Archive", year: '2019', medium: 'Mixed Media on Paper' },
             { src: "00 00.jpg", title: "00:00", year: '2019', medium: 'Oil on Canvas' },
@@ -854,6 +955,7 @@ const seriesData = {
     },
     dream: {
         name: 'Dream Only',
+        statement: 'one picture. one person.',
         works: [
             { src: "mmexport269b5266828106f76bea3bfb92356f75_1777309536855.png", title: "In this world right now I only have you", year: '2018', medium: 'Procreate on iPad' }
         ]
@@ -918,6 +1020,8 @@ const topbar    = document.getElementById('topbar');
 const room      = document.getElementById('room');
 const gallery   = document.getElementById('gallery');
 const gTitle    = document.getElementById('gallery-title');
+const gStatement = document.getElementById('gallery-statement');
+const gCount    = document.getElementById('gallery-count');
 const gWorks    = document.getElementById('gallery-works');
 const gBack     = document.getElementById('gallery-back');
 const lb        = document.getElementById('lb');
@@ -945,7 +1049,132 @@ const cdot  = document.getElementById('cdot');
 const cring = document.getElementById('cring');
 const spot  = document.getElementById('spotlight');
 const finePointer = window.matchMedia('(pointer: fine)').matches;
-let cx=0,cy=0,rx=0,ry=0,sx=0,sy=0;
+let cx = window.innerWidth/2, cy = window.innerHeight/2;
+let rx = cx, ry = cy, sx = cx, sy = cy;
+
+// ── Lamp lighting, per-piece depth parallax, idle hush ──
+// The lamp (spotlight) decides how lit each piece is. Pieces rest dim and come up as the
+// lamp nears them. Each piece also drifts against the cursor by its own depth. After a few
+// seconds of stillness the room "hushes": lamp shrinks, notes fade, music ducks.
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobileView = () => window.innerWidth <= 768;
+const lampState = { k: 1, hushed: false, px: 0, py: 0, tx: 0, ty: 0 };
+const HUSH_AFTER = 8000;            // ms of stillness before the room hushes
+const LAMP_RADIUS = 430;            // px reach of the lamp at full strength
+const PARALLAX_PX = 20;             // px of travel per unit of depth
+let lastMove = performance.now();
+
+const pieceList = Array.from(pieces).map(el => ({
+    el, inner: el.querySelector('.piece-inner'), depth: parseFloat(el.dataset.depth) || 1,
+    lit: -1, cx: 0, cy: 0, ox: 0, oy: 0, tr: ''
+}));
+
+function measurePieces() {
+    pieceList.forEach(o => {
+        const r = o.el.getBoundingClientRect();
+        o.cx = r.left + r.width/2 - o.ox;
+        o.cy = r.top  + r.height/2 - o.oy;
+    });
+}
+measurePieces();
+window.addEventListener('resize', measurePieces);
+window.addEventListener('load', measurePieces);
+pieceList.forEach(o => { const im = o.el.querySelector('img'); if (im) im.addEventListener('load', measurePieces); });
+
+function setLit(o, v) {
+    v = Math.max(0, Math.min(1, v));
+    v = v * v * (3 - 2 * v);                       // smoothstep falloff
+    if (Math.abs(v - o.lit) > .004) { o.lit = v; o.el.style.setProperty('--lit', v.toFixed(3)); }
+}
+
+function stage(roomOn) {
+    const now = performance.now();
+    const mobile = isMobileView();
+    const locked = room.classList.contains('locked');
+
+    // idle hush (desktop, room view only)
+    const canHush = finePointer && !mobile && roomOn && !locked;
+    const shouldHush = canHush && (now - lastMove > HUSH_AFTER);
+    if (shouldHush !== lampState.hushed) {
+        lampState.hushed = shouldHush;
+        document.body.classList.toggle('hushed', shouldHush);
+    }
+    lampState.k += ((shouldHush ? .45 : 1) - lampState.k) * .03;
+
+    // music ducks while hushed, returns when you move
+    if (bgmPlaying) {
+        const target = shouldHush ? .08 : .25;
+        if (Math.abs(bgm.volume - target) > .002) {
+            bgm.volume = Math.min(1, Math.max(0, bgm.volume + (target - bgm.volume) * .03));
+        }
+    }
+
+    // per-piece depth parallax
+    const parallaxOn = finePointer && !mobile && !reduceMotion;
+    if (!parallaxOn) {
+        pieceList.forEach(o => { if (o.tr) { o.el.style.translate = ''; o.tr = ''; o.ox = o.oy = 0; } });
+    } else if (locked) {
+        lampState.px = 0; lampState.py = 0;
+    } else {
+        lampState.px += (lampState.tx - lampState.px) * .08;
+        lampState.py += (lampState.ty - lampState.py) * .08;
+        pieceList.forEach(o => {
+            o.ox = -lampState.px * PARALLAX_PX * o.depth;
+            o.oy = -lampState.py * PARALLAX_PX * o.depth;
+            o.el.style.translate = o.ox.toFixed(2) + 'px ' + o.oy.toFixed(2) + 'px';
+            o.tr = 'on';
+        });
+    }
+
+    // lamp lighting
+    if (mobile) {
+        // no cursor: the piece nearest the middle of the screen is the lit one
+        const mid = window.innerHeight / 2, R = window.innerHeight * .7;
+        pieceList.forEach(o => {
+            const r = o.el.getBoundingClientRect();
+            setLit(o, 1 - Math.abs(r.top + r.height/2 - mid) / R);
+            // gentle scroll parallax: pieces drift against the scroll by a few px
+            if (o.inner && !reduceMotion) {
+                o.inner.style.transform = 'translateY(' + ((r.top + r.height/2 - mid) * -0.045).toFixed(1) + 'px)';
+            }
+        });
+    } else if (!finePointer) {
+        pieceList.forEach(o => setLit(o, .85));    // touch tablets in the desktop layout: no lamp, keep it readable
+    } else {
+        const R = LAMP_RADIUS * lampState.k;
+        pieceList.forEach(o => setLit(o, 1 - Math.hypot(o.cx + o.ox - sx, o.cy + o.oy - sy) / R));
+    }
+}
+// ── Charcoal trail ──
+// Moving the cursor lays down faint charcoal-like strokes; they fade over ~3s.
+// When the room hushes you are not moving, so no new marks are made.
+const sCan = document.getElementById('strokes');
+const sCtx = sCan.getContext('2d');
+let sLast = null;
+function sizeStrokes() { sCan.width = window.innerWidth; sCan.height = window.innerHeight; }
+sizeStrokes();
+window.addEventListener('resize', sizeStrokes);
+function strokeFrame(active) {
+    sCtx.globalCompositeOperation = 'destination-out';
+    sCtx.fillStyle = 'rgba(0,0,0,0.022)';
+    sCtx.fillRect(0, 0, sCan.width, sCan.height);
+    sCtx.globalCompositeOperation = 'source-over';
+    if (!active || reduceMotion || !finePointer) { sLast = null; return; }
+    if (sLast) {
+        const dist = Math.hypot(cx - sLast.x, cy - sLast.y);
+        if (dist > 1 && dist < 240) {
+            sCtx.lineCap = 'round';
+            sCtx.strokeStyle = 'rgba(238,233,220,0.10)';
+            sCtx.lineWidth = 2.4;
+            sCtx.beginPath(); sCtx.moveTo(sLast.x, sLast.y); sCtx.lineTo(cx, cy); sCtx.stroke();
+            sCtx.strokeStyle = 'rgba(238,233,220,0.05)';
+            sCtx.lineWidth = 5.5;
+            sCtx.beginPath(); sCtx.moveTo(sLast.x + 1.5, sLast.y - 1); sCtx.lineTo(cx + 1.5, cy - 1); sCtx.stroke();
+        }
+    }
+    sLast = { x: cx, y: cy };
+}
+
 if (cdot && cring) {
     document.addEventListener('mousemove', e => {
         cx = e.clientX; cy = e.clientY;
@@ -956,15 +1185,17 @@ if (cdot && cring) {
         cring.style.left = rx+'px'; cring.style.top = ry+'px';
         // spotlight trails the cursor a little slower, like a real lamp
         sx += (cx-sx)*.07; sy += (cy-sy)*.07;
-        spot.style.left = sx+'px'; spot.style.top = sy+'px';
         const roomOn = room.classList.contains('visible')
             && !gallery.classList.contains('open')
             && !lb.classList.contains('open')
             && !notes.classList.contains('open');
-        spot.style.opacity = roomOn ? '1' : '0';
+        stage(roomOn);
+        strokeFrame(roomOn);
+        spot.style.transform = 'translate3d(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px,0) translate(-50%,-50%) scale(' + lampState.k.toFixed(3) + ')';
+        spot.style.opacity = (roomOn && finePointer) ? (lampState.hushed ? '.55' : '1') : '0';
         requestAnimationFrame(loop);
     })();
-    const hovers = () => document.querySelectorAll('.piece, .gallery-back, #bgm-toggle, #notes-open, #notes-close, #lb-close, .lb-nav button, .work-item img');
+    const hovers = () => document.querySelectorAll('.piece, .gallery-back, #bgm-toggle, #notes-open, #notes-close, #lb-close, .lb-nav button, .work-item img, #lb-img');
     document.addEventListener('mouseover', e => { if ([...hovers()].some(el=>el.contains(e.target))) cring.classList.add('hover'); });
     document.addEventListener('mouseout',  e => { if ([...hovers()].some(el=>el.contains(e.target))) cring.classList.remove('hover'); });
 }
@@ -995,13 +1226,13 @@ if (finePointer) {
     });
 }
 
-// ── Parallax ──
+// ── Parallax target + wake from hush (applied per piece in stage()) ──
 document.addEventListener('mousemove', e => {
-    if (room.classList.contains('locked') || window.innerWidth <= 768) return;
-    const dx = (window.innerWidth/2  - e.clientX) / 50;
-    const dy = (window.innerHeight/2 - e.clientY) / 50;
-    room.style.transform = `translate(${dx}px,${dy}px)`;
+    lampState.tx = (e.clientX - window.innerWidth/2)  / (window.innerWidth/2);
+    lampState.ty = (e.clientY - window.innerHeight/2) / (window.innerHeight/2);
 });
+['mousemove', 'mousedown', 'keydown', 'wheel', 'touchstart'].forEach(ev =>
+    document.addEventListener(ev, () => { lastMove = performance.now(); }, { passive: true }));
 
 // ── Enter ──
 entrance.addEventListener('click', () => {
@@ -1030,23 +1261,36 @@ notesOpen.addEventListener('click', e => {
 notesClose.addEventListener('click', () => notes.classList.remove('open'));
 
 // ── Open Series ──
+let galleryObs = null, countObs = null;
 function openSeries(key) {
     const s = seriesData[key];
     if (!s) return;
     currentWorks = s.works;
     gTitle.textContent = s.name;
+    gStatement.textContent = s.statement || '';
     gWorks.innerHTML = '';
+    if (galleryObs) galleryObs.disconnect();
+    if (countObs) countObs.disconnect();
+    const fmt = n => String(n).padStart(2, '0');
+    gCount.textContent = fmt(1) + ' / ' + fmt(s.works.length);
 
     s.works.forEach((w, i) => {
         const item = document.createElement('div');
         item.className = 'work-item';
+        item.dataset.idx = i;
         item.innerHTML = `
-            <img src="${w.src}" alt="${w.title}" loading="lazy">
-            <div class="work-info">
-                <span class="work-title">${w.title}</span>
-                <span class="work-meta">${w.year}<br>${w.medium}</span>
+            <div class="work-frame">
+                <img src="${w.src}" alt="${w.title}" loading="lazy">
+                <div class="work-info">
+                    <span class="work-title">${w.title}</span>
+                    <span class="work-meta">${w.year}<br>${w.medium}</span>
+                </div>
             </div>`;
-        item.querySelector('img').addEventListener('click', () => openLb(i));
+        const wImg = item.querySelector('img'), wInfo = item.querySelector('.work-info');
+        wImg.addEventListener('click', () => openLb(i));
+        const fitInfo = () => { if (wImg.clientWidth) wInfo.style.width = wImg.clientWidth + 'px'; };
+        wImg.addEventListener('load', fitInfo);
+        if (wImg.complete) fitInfo();
         gWorks.appendChild(item);
     });
 
@@ -1058,10 +1302,43 @@ function openSeries(key) {
         document.body.style.overflow = 'hidden';
     }
 
-    const obs = new IntersectionObserver(entries => {
+    galleryObs = new IntersectionObserver(entries => {
         entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
     }, { threshold: 0.08 });
-    setTimeout(() => gWorks.querySelectorAll('.work-item').forEach(el => obs.observe(el)), 100);
+    countObs = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+            if (en.isIntersecting) gCount.textContent = fmt(+en.target.dataset.idx + 1) + ' / ' + fmt(s.works.length);
+        });
+    }, { root: gallery, rootMargin: '-40% 0px -40% 0px', threshold: 0 });
+    setTimeout(() => gWorks.querySelectorAll('.work-item').forEach(el => { galleryObs.observe(el); countObs.observe(el); }), 100);
+}
+
+// a series with a single work goes straight into the lightbox;
+// multi-work series cross-fade through a shared-element view transition when available
+function openPieceTarget(p) {
+    const s = seriesData[p.dataset.series];
+    if (!s) return;
+    if (s.works.length === 1) {
+        currentWorks = s.works;
+        openLb(0);
+        return;
+    }
+    const img = p.querySelector('img');
+    if (document.startViewTransition && img) {
+        img.style.viewTransitionName = 'piece-hero';
+        const vt = document.startViewTransition(() => openSeries(p.dataset.series));
+        requestAnimationFrame(() => {
+            const f = gWorks.querySelector('.work-item img');
+            if (f) f.style.viewTransitionName = 'piece-hero';
+        });
+        vt.finished.finally(() => {
+            img.style.viewTransitionName = '';
+            const f = gWorks.querySelector('.work-item img');
+            if (f) f.style.viewTransitionName = '';
+        });
+    } else {
+        openSeries(p.dataset.series);
+    }
 }
 
 // ── Piece click ──
@@ -1071,7 +1348,7 @@ pieces.forEach(p => {
         room.classList.add('locked');
 
         if (window.innerWidth > 768) {
-            room.style.transform = 'translate(0,0)';
+            pieceList.forEach(o => { o.el.style.translate = '0px 0px'; o.ox = o.oy = 0; });
             topbar.style.opacity = '0';
             pieces.forEach(other => { if (other !== p) other.classList.add('faded'); });
             p.classList.add('selected');
@@ -1080,22 +1357,22 @@ pieces.forEach(p => {
             p.style.top  = '50vh';
             p.style.left = '50vw';
             p.style.transform = 'translate(-50%,-50%) scale(1.1)';
-            setTimeout(() => openSeries(p.dataset.series), 900);
+            setTimeout(() => openPieceTarget(p), 900);
         } else {
-            openSeries(p.dataset.series);
+            openPieceTarget(p);
         }
     });
 });
 
+window.addEventListener('resize', () => {
+    gWorks.querySelectorAll('.work-item').forEach(it => {
+        const im = it.querySelector('img'), info = it.querySelector('.work-info');
+        if (im && info && im.clientWidth) info.style.width = im.clientWidth + 'px';
+    });
+});
+
 // ── Back to room ──
-gBack.addEventListener('click', () => {
-    gallery.classList.remove('open');
-
-    if(window.innerWidth <= 768) {
-        document.documentElement.style.overflowY = 'auto';
-        document.body.style.overflowY = 'auto';
-    }
-
+function unlockRoom(delay) {
     setTimeout(() => {
         room.classList.remove('locked');
         if (window.innerWidth > 768) {
@@ -1107,10 +1384,139 @@ gBack.addEventListener('click', () => {
                 setTimeout(() => { p.classList.remove('returning'); p.style.transition = ''; }, 1000);
             });
         }
-    }, 600);
+    }, delay);
+}
+gBack.addEventListener('click', () => {
+    gallery.classList.remove('open');
+
+    if(window.innerWidth <= 768) {
+        document.documentElement.style.overflowY = 'auto';
+        document.body.style.overflowY = 'auto';
+    }
+
+    unlockRoom(600);
 });
 
 // ── Lightbox ──
+// Zoom model: scale `s` and pan (tx, ty) are applied to #lb-img as translate() scale() about
+// its centre. Wheel / pinch zoom about the pointer; click (mouse) or double-tap (touch)
+// toggles zoom; drag pans; swipe changes work when not zoomed.
+const lbZoomEl = document.getElementById('lb-zoom');
+const zoom = { s: 1, tx: 0, ty: 0 };
+const lbPointers = new Map();
+let lbMoved = false, lbPinched = false, lbSuppressClick = false;
+let lbPrevDist = 0, lbPrevMid = null, lbLastTap = { t: 0, x: 0, y: 0 };
+const clampN = (v, a, b) => Math.min(b, Math.max(a, v));
+
+function lbDims() {
+    return {
+        w0: lbImg.offsetWidth, h0: lbImg.offsetHeight,
+        cx: lbImg.offsetLeft + lbImg.offsetWidth / 2,
+        cy: lbImg.offsetTop  + lbImg.offsetHeight / 2
+    };
+}
+function lbMax() { return clampN(lbImg.naturalWidth / Math.max(1, lbImg.offsetWidth), 2.5, 8); }
+
+function lbClampPan() {
+    const d = lbDims(), W = lb.clientWidth, H = lb.clientHeight;
+    const sw = d.w0 * zoom.s, sh = d.h0 * zoom.s;
+    zoom.tx = sw > W ? clampN(zoom.tx, W - d.cx - sw/2, -d.cx + sw/2) : 0;
+    zoom.ty = sh > H ? clampN(zoom.ty, H - d.cy - sh/2, -d.cy + sh/2) : 0;
+}
+function lbApply(animated) {
+    lbImg.classList.toggle('anim', !!animated);
+    const zoomed = zoom.s > 1.01;
+    lbImg.style.transform = (zoom.s === 1 && !zoom.tx && !zoom.ty) ? '' :
+        'translate(' + zoom.tx.toFixed(1) + 'px,' + zoom.ty.toFixed(1) + 'px) scale(' + zoom.s.toFixed(3) + ')';
+    lb.classList.toggle('zoomed', zoomed);
+    lbZoomEl.textContent = zoomed
+        ? zoom.s.toFixed(1) + '× · ' + (finePointer ? 'click' : 'double-tap') + ' to reset'
+        : (finePointer ? 'click to zoom' : 'pinch to zoom');
+}
+function lbReset(animated) { zoom.s = 1; zoom.tx = 0; zoom.ty = 0; lbApply(animated); }
+function lbZoomAt(px, py, s2, animated) {
+    const d = lbDims(), s1 = zoom.s;
+    s2 = clampN(s2, 1, lbMax());
+    if (s2 <= 1.001) { lbReset(animated); return; }
+    zoom.tx = (px - d.cx) - (px - d.cx - zoom.tx) * (s2 / s1);
+    zoom.ty = (py - d.cy) - (py - d.cy - zoom.ty) * (s2 / s1);
+    zoom.s = s2;
+    lbClampPan();
+    lbApply(animated);
+}
+function lbToggleZoom(px, py) {
+    if (zoom.s > 1.01) lbReset(true);
+    else lbZoomAt(px, py, Math.min(lbMax(), 3), true);
+}
+function lbHitImg(x, y) {
+    const r = lbImg.getBoundingClientRect();
+    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+}
+lbApply(false);
+
+lbClickZone.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    try { lbClickZone.setPointerCapture(e.pointerId); } catch (_) {}
+    lbPointers.set(e.pointerId, { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, type: e.pointerType });
+    if (lbPointers.size === 1) { lbMoved = false; lbPinched = false; }
+    if (lbPointers.size === 2) {
+        const [a, b] = [...lbPointers.values()];
+        lbPrevDist = Math.hypot(a.x - b.x, a.y - b.y);
+        lbPrevMid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        lbMoved = true; lbPinched = true;
+    }
+});
+lbClickZone.addEventListener('pointermove', e => {
+    const p = lbPointers.get(e.pointerId);
+    if (!p) return;
+    const dx = e.clientX - p.x, dy = e.clientY - p.y;
+    p.x = e.clientX; p.y = e.clientY;
+    if (Math.hypot(e.clientX - p.sx, e.clientY - p.sy) > 6) lbMoved = true;
+    if (lbPointers.size === 2) {
+        const [a, b] = [...lbPointers.values()];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        if (lbPrevDist && lbPrevMid) {
+            lbZoomAt(mid.x, mid.y, zoom.s * dist / lbPrevDist, false);
+            if (zoom.s > 1) { zoom.tx += mid.x - lbPrevMid.x; zoom.ty += mid.y - lbPrevMid.y; lbClampPan(); lbApply(false); }
+        }
+        lbPrevDist = dist; lbPrevMid = mid;
+    } else if (zoom.s > 1.01 && lbMoved) {
+        zoom.tx += dx; zoom.ty += dy;
+        lbClampPan(); lbApply(false);
+    }
+});
+function lbPointerEnd(e) {
+    const p = lbPointers.get(e.pointerId);
+    if (!p) return;
+    lbPointers.delete(e.pointerId);
+    if (lbPointers.size < 2) { lbPrevDist = 0; lbPrevMid = null; }
+    if (lbPointers.size > 0) return;
+    const isUp = e.type === 'pointerup';
+    lbSuppressClick = lbMoved;
+    if (isUp && !lbMoved && lbHitImg(e.clientX, e.clientY)) {
+        if (p.type === 'mouse') {
+            lbToggleZoom(e.clientX, e.clientY);
+        } else {
+            const now = performance.now();
+            if (now - lbLastTap.t < 320 && Math.hypot(e.clientX - lbLastTap.x, e.clientY - lbLastTap.y) < 30) {
+                lbToggleZoom(e.clientX, e.clientY); lbLastTap.t = 0;
+            } else { lbLastTap = { t: now, x: e.clientX, y: e.clientY }; }
+        }
+    } else if (isUp && lbMoved && !lbPinched && zoom.s <= 1.01 && p.type !== 'mouse') {
+        const dx = e.clientX - p.sx, dy = e.clientY - p.sy;
+        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) lbGo(dx < 0 ? 1 : -1);
+    }
+}
+lbClickZone.addEventListener('pointerup', lbPointerEnd);
+lbClickZone.addEventListener('pointercancel', lbPointerEnd);
+lbClickZone.addEventListener('wheel', e => {
+    e.preventDefault();
+    const unit = e.deltaMode === 1 ? 16 : 1;
+    const k = e.ctrlKey ? 0.01 : 0.0018;
+    lbZoomAt(e.clientX, e.clientY, zoom.s * Math.exp(-e.deltaY * unit * k), false);
+}, { passive: false });
+
 function openLb(idx) {
     currentLbIdx = idx;
     const w = currentWorks[idx];
@@ -1126,6 +1532,7 @@ function openLb(idx) {
 }
 
 function renderLbContent(w) {
+    lbReset(false);
     lbImg.src = w.src;
     lbImg.onload = () => lbImg.classList.add('shown');
     lbTitle.textContent = w.title;
@@ -1137,7 +1544,9 @@ function closeLb() {
     lb.classList.remove('open');
     lbImg.classList.remove('shown');
     lbCaption.classList.remove('shown');
-    setTimeout(() => { lbImg.src = ''; }, 400);
+    setTimeout(() => { lbImg.src = ''; lbReset(false); }, 400);
+    // opened straight from the room (single-work series)? free the room again
+    if (!gallery.classList.contains('open') && room.classList.contains('locked')) unlockRoom(150);
 }
 
 function lbGo(dir) {
@@ -1153,9 +1562,10 @@ lbClose.addEventListener('click', (e) => {
 
 // 点击大图之外的任意黑色空白区域也能直接关闭
 lbClickZone.addEventListener('click', (e) => {
-    if (e.target === lbClickZone) {
-        closeLb();
-    }
+    if (lbSuppressClick) { lbSuppressClick = false; return; }
+    if (lbHitImg(e.clientX, e.clientY)) return;      // taps on the painting are handled by the pointer code above
+    if (zoom.s > 1.01) { lbReset(true); return; }   // first click outside while zoomed just zooms back out
+    closeLb();
 });
 lb.addEventListener('click', (e) => {
     if (e.target === lb) {
@@ -1175,6 +1585,9 @@ document.addEventListener('keydown', e => {
     if (lb.classList.contains('open')) {
         if (e.key === 'ArrowLeft')  lbGo(-1);
         if (e.key === 'ArrowRight') lbGo(1);
+        if (e.key === '+' || e.key === '=') lbZoomAt(window.innerWidth/2, window.innerHeight/2, Math.max(zoom.s * 1.4, 1.6), true);
+        if (e.key === '-' || e.key === '_') lbZoomAt(window.innerWidth/2, window.innerHeight/2, zoom.s / 1.4, true);
+        if (e.key === '0') lbReset(true);
     }
 });
 </script>
